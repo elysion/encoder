@@ -1,0 +1,32 @@
+# See: http://code.google.com/p/arduino/wiki/Platforms
+
+menu.cpu=Processor
+
+##############################################################
+
+encoder.name=Encoder Arduino
+
+encoder.upload.tool=avrdude
+encoder.upload.protocol=arduino
+
+encoder.bootloader.tool=avrdude
+encoder.bootloader.unlock_bits=0x3F
+encoder.bootloader.lock_bits=0x0F
+
+encoder.build.f_cpu=8000000L
+encoder.build.board=AVR_ENCODER
+encoder.build.core=arduino
+encoder.build.variant=encoder
+
+encoder.menu.cpu.atmega168=ATmega168p
+
+encoder.menu.cpu.atmega168.upload.maximum_size=14336
+encoder.menu.cpu.atmega168.upload.maximum_data_size=1024
+encoder.menu.cpu.atmega168.upload.speed=19200
+
+encoder.menu.cpu.atmega168.bootloader.low_fuses=0xe2
+encoder.menu.cpu.atmega168.bootloader.high_fuses=0xdd
+encoder.menu.cpu.atmega168.bootloader.extended_fuses=0xF8
+encoder.menu.cpu.atmega168.bootloader.file=atmega/ATmegaBOOT_168_encoder.hex
+
+encoder.menu.cpu.atmega168.build.mcu=atmega168p
