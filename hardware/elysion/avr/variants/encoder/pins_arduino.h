@@ -20,10 +20,6 @@
   Boston, MA  02111-1307  USA
 */
 
-/*
-Pin number as io number modification for 32 pin atmega168 packages
-*/
-
 #ifndef Pins_Arduino_h
 #define Pins_Arduino_h
 
@@ -73,10 +69,13 @@ static const uint8_t A6 = PIN_A6;
 static const uint8_t A7 = PIN_A7;
 
 // TODO
-#define digitalPinToPCICR(p)    (((p) >= 0 && (p) <= 21) ? (&PCICR) : ((uint8_t *)0))
-#define digitalPinToPCICRbit(p) (((p) <= 7) ? 2 : (((p) <= 13) ? 0 : 1))
-#define digitalPinToPCMSK(p)    (((p) <= 7) ? (&PCMSK2) : (((p) <= 13) ? (&PCMSK0) : (((p) <= 21) ? (&PCMSK1) : ((uint8_t *)0))))
-#define digitalPinToPCMSKbit(p) (((p) <= 7) ? (p) : (((p) <= 13) ? ((p) - 8) : ((p) - 14)))
+#define digitalPinToPCICR(p)    (((p) >= 0 && (p) <= 21) ? (&PCICR) : (uint8_t*) 0)
+#define digitalPinToPCICRbit(p) (((p) <= 7) ? 2 : (((p) <= 13) ? 0 : 1)) // TODO
+#define digitalPinToPCMSK(p)    (((p) <= 2 || (p) >= 29 || ((p) >= 9 && (p) <= 11)) ? (&PCMSK2) : ((p) <= 17) ? (&PCMSK0) : ((p) <= 29) ? (&PCMSK1) : (uint8_t*) 0)
+//#define digitalPinToPCMSK(p)    (((p) <= 7) ? (&PCMSK2) : (((p) <= 13) ? (&PCMSK0) : (((p) <= 21) ? (&PCMSK1) : (uint8_t*) 0)))
+#define digitalPinToPCMSKbit(p) ((p) == 1 ? 3 : (p) == 2 ? 4 : (p) >= 30 ? (p - 30) : (p) >= 23 ? (p - 23) : (p) >= 12 ? (p - 12) : (p) >= 9 ? (p - 4) : -1)
+//#define digitalPinToPCMSKbit(p) (((p) <= 7) ? (p) : (((p) <= 13) ? ((p) - 8) : ((p) - 14)))
+#define enablePCINT(p)					*digitalPinToPCMSK(p) |= (1<<digitalPinToPCMSKbit(p))
 
 #define digitalPinToInterrupt(p)  ((p) == 32 ? 0 : ((p) == 1 ? 1 : NOT_AN_INTERRUPT))
 
@@ -262,24 +261,52 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #define SERIAL_PORT_MONITOR   Serial
 #define SERIAL_PORT_HARDWARE  Serial
 
-static const uint8_t ENC1A = 30;
-static const uint8_t ENC1B = 26;
-static const uint8_t ENCL1A = 1;
-static const uint8_t ENCL1B = 2;
-static const uint8_t ENCL2A = 32;
-static const uint8_t ENCL2B = 31;
-static const uint8_t ENCR1A = 7;
-static const uint8_t ENCR1B = 8;
-static const uint8_t ENCR2A = 12;
-static const uint8_t ENCR2B = 13;
+// TODO: Update for new version / create a new header / define a version macro
+#define ENC1A (30)
+#define ENC1B (26)
+#define ENCL1A (1)
+#define ENCL1B (2)
+#define ENCL2A (32)
+#define ENCL2B (31)
+#define ENCR1A (7)
+#define ENCR1B (8)
+#define ENCR2A (12)
+#define ENCR2B (13)
 
-static const uint8_t SW1 = 23;
-static const uint8_t SWL = 24;
-static const uint8_t SWR = 25;
+#define SW1 (23)
+#define SWL (24)
+#define SWR (25)
 
-static const uint8_t TOUCH = 11;
+#define TOUCH (11)
 
-static const uint8_t LED1 = 9;
-static const uint8_t LED2 = 10;
+#define LED1 (9)
+#define LED2 (10)
 
+#define POT1 SW1
+#define POTL SWL
+#define POTR SWR
+
+#define NOT_POSSIBLE (-1)
+
+// TODO: Update for new version / create a new header / define a version macro
+// TODO: Use an array for defining PCMSK registers to use?
+static const uint8_t ENC1A_INT = PCINT16;
+static const uint8_t ENC1B_INT = PCINT11;
+static const uint8_t ENCL1A_INT = PCINT19;
+static const uint8_t ENCL1B_INT = PCINT20;
+static const uint8_t ENCL2A_INT = PCINT18;
+static const uint8_t ENCL2B_INT = PCINT17;
+static const uint8_t ENCR1A_INT = PCINT6;
+static const uint8_t ENCR1B_INT = PCINT7;
+static const uint8_t ENCR2A_INT = PCINT0;
+static const uint8_t ENCR2B_INT = PCINT1;
+
+//NOTE: Current implementation expects the switches to be on the same port
+#define SW1_INT PCINT8
+#define SWL_INT PCINT9
+#define SWR_INT PCINT10
+static const uint8_t TOUCH_INT = PCINT23;
+static const uint8_t SW_INTS_MASK = (1 << SW1_INT) | (1 << SWL_INT) | (1 << SWR_INT);
+static const uint8_t SW_INTS[] = {NOT_POSSIBLE, PCINT9, PCINT8, PCINT10};
+static const uint8_t TOUCH_INTS[] = {NOT_POSSIBLE, PCINT9, PCINT23, PCINT10};
 #endif

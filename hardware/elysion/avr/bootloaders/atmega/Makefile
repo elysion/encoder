@@ -67,7 +67,7 @@ OBJDUMP        = avr-objdump
 all:
 
 encoder: TARGET = encoder
-encoder: CFLAGS += '-DMAX_TIME_COUNT=F_CPU>>1' '-DNUM_LED_FLASHES=3'
+encoder: CFLAGS += '-DMAX_TIME_COUNT=F_CPU>>3' '-DNUM_LED_FLASHES=3'
 encoder: AVR_FREQ = 8000000L
 encoder: $(PROGRAM)_encoder.hex
 encoder_isp: encoder

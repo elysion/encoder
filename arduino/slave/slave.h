@@ -1,23 +1,9 @@
+#ifndef SLAVE_H
+#define SLAVE_H
+
+#define NOT_POSSIBLE -1
+
 byte POT_CHANGE_THRESHOLD = 5;
-
-const byte ENC1A_INT = PCINT16;
-const byte ENC1B_INT = PCINT11;
-const byte ENCL1A_INT = PCINT19;
-const byte ENCL1B_INT = PCINT20;
-const byte ENCL2A_INT = PCINT18;
-const byte ENCL2B_INT = PCINT17;
-const byte ENCR1A_INT = PCINT6;
-const byte ENCR1B_INT = PCINT7;
-const byte ENCR2A_INT = PCINT0;
-const byte ENCR2B_INT = PCINT1;
-
-//NOTE: Current implementation expects the switches to be on the same port
-const byte SW1_INT = PCINT8;
-const byte SWL_INT = PCINT9;
-const byte SWR_INT = PCINT10;
-const byte TOUCH_INT = PCINT23;
-const byte SW_INTS_MASK = (1 << SW1_INT) | (1 << SWL_INT) | (1 << SWR_INT);
-const byte SW_INTS[] = {PCINT9, PCINT8, PCINT10};
 
 enum Board {
   BOARD_L2,
@@ -35,35 +21,48 @@ enum Board {
 #define BOARD_FEATURE_PADS _BV(4)
 #define BOARD_FEATURE_LED _BV(5)
 
-const byte ENCODER_PINS[] = {
-  ENCL2A, ENCL2B,
-  ENCL1A, ENCL1B,
-  ENC1A, ENC1B, 
-  ENCR1A, ENCR1B, 
-  ENCR2A, ENCR2B
+const byte ENCODER_PINS[5][2] = {
+  {ENCL2A, ENCL2B},
+  {ENCL1A, ENCL1B},
+  {ENC1A, ENC1B},
+  {ENCR1A, ENCR1B},
+  {ENCR2A, ENCR2B}
 };
 
 const byte BUTTON_PINS[] = {
-  0,
+  NOT_POSSIBLE,
   SWL,
   SW1,
-  SWR,
-  0
+  SWR
 };
 
 const byte POT_PINS[] = {
-  0,
+  NOT_POSSIBLE,
   POTL,
   POT1,
-  POTR,
-  0
+  POTR
 };
-
 
 const byte TOUCH_PINS[] = {
-  0,
+  NOT_POSSIBLE,
   ENCL2B,
   TOUCH,
-  ENCR2B,
-  0
+  ENCR2B
 };
+
+const byte PAD_PINS[4][4] {
+  {},
+  {ENCL2A, ENCL1B, ENCL1A, SWL},
+  {TOUCH, ENC1B, ENC1A, SW1},
+  {ENCR1B, ENCR1A, ENCR2A, SWR}
+};
+
+#define HAS_FEATURE(BOARD, feature) (BOARD_FEATURES_##BOARD & feature)
+#define HAS_PADS(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_PADS))
+#define HAS_POT(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_POT))
+#define HAS_BUTTON(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_BUTTON))
+#define HAS_TOUCH(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_TOUCH))
+
+#define ANY_BOARD_HAS_FEATURE(FEATURE) (HAS_FEATURE(L2, FEATURE) | HAS_FEATURE(L1, FEATURE) | HAS_FEATURE(M, FEATURE) | HAS_FEATURE(R1, FEATURE) | HAS_FEATURE(R2, FEATURE))
+
+#endif

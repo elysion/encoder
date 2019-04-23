@@ -52,8 +52,12 @@ void handleControlChange() {
   byte type = Wire.read();
   byte value = Wire.read();
 
-  Serial.println(address);
-  Serial.println(control);
-  Serial.println(type);
+  Serial.print("Address: ");
+  Serial.print(address);
+  Serial.print(", Control: ");
+  Serial.print(control);
+  Serial.print(", Type: ");
+  Serial.print(type);
+  Serial.print(", Value: ");
   Serial.println(value);
 }

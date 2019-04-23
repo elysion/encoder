@@ -1,39 +1,83 @@
+#include <Adafruit_NeoPixel.h>
 #include <RotaryEncoder.h>
-
-#include <Arduino.h>
 #include <Wire.h>
 #include <EEPROM.h>
+
+#define USART_DEBUG_ENABLED 1
+#define SKIP_FEATURE_VALIDATION
 
 #include "shared.h"
 #include "slave.h"
 
-volatile int address;
+const uint16_t PixelCount = 8;
+const uint8_t PixelPin = LED1;  // A1 // make sure to set this to the correct pin, ignored for Esp8266
+Adafruit_NeoPixel pixels(PixelCount, PixelPin, NEO_GRB + NEO_KHZ800);
 
-#define USART_DEBUG_ENABLED 1
+volatile int address;
 
 byte switchStates;
 byte previousSwitchStates;
+
 byte touchStates;
 byte previousTouchStates;
 
-const byte BOARD_FEATURES[5] = {
-  NO_BOARD
-  #ifdef USART_DEBUG_ENABLED
-    & !BOARD_FEATURE_ENCODER & !BOARD_FEATURE_TOUCH // L2 encoder pins are connected to main boards RX & TX and hence cannot be used when using USART
-  #endif
-  ,
-  NO_BOARD, 
-  BOARD_FEATURE_POT, 
-  NO_BOARD,
-  NO_BOARD
+byte padStates[] =  {
+  0b00001111,
+  0b00001111,
+  0b00001111
+};
+byte previousPadStates[] = {
+  0b00001111,
+  0b00001111,
+  0b00001111
 };
 
-RotaryEncoder encoders[5] = { // TODO: Allocate memory dynamically?
-  RotaryEncoder(ENCL2A, ENCL2B),
-  RotaryEncoder(ENCL1A, ENCL1B),
-  RotaryEncoder(ENC1A, ENC1B), 
-  RotaryEncoder(ENCR1A, ENCR1B), 
-  RotaryEncoder(ENCR2A, ENCR2B)
+#define BOARD_FEATURES_L2 (NO_BOARD)
+#define BOARD_FEATURES_L1 (BOARD_FEATURE_PADS | BOARD_FEATURE_LED)
+#define BOARD_FEATURES_M (BOARD_FEATURE_PADS | BOARD_FEATURE_LED)
+#define BOARD_FEATURES_R1 (NO_BOARD)
+#define BOARD_FEATURES_R2 (NO_BOARD)
+
+const byte BOARD_FEATURES[] = {
+  BOARD_FEATURES_L2,
+  BOARD_FEATURES_L1,
+  BOARD_FEATURES_M,
+  BOARD_FEATURES_R1,
+  BOARD_FEATURES_R2,
+};
+
+#include "feature_validation.h"
+
+RotaryEncoder* encoders[5] = {
+  #if BOARD_FEATURES_L2 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_L2][0], ENCODER_PINS[BOARD_L2][1])
+  #else
+  0
+  #endif
+  ,
+  #if BOARD_FEATURES_L1 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_L1][0], ENCODER_PINS[BOARD_L1][1])
+  #else
+  0
+  #endif
+  ,
+  #if BOARD_FEATURES_M & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_M][0], ENCODER_PINS[BOARD_M][1])
+  #else
+  0
+  #endif
+  ,
+  #if BOARD_FEATURES_R1 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_R1][0], ENCODER_PINS[BOARD_R1][1])
+  #else
+  0
+  #endif
+  ,
+  #if BOARD_FEATURES_R2 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_R2][0], ENCODER_PINS[BOARD_R2][1])
+  #else
+  0
+  #endif
 };
 
 int positions[] = {
@@ -44,7 +88,7 @@ int positions[] = {
   0
 };
 
-#ifdef USART_DEBUG_ENABLED
+#if USART_DEBUG_ENABLED
 byte states[] = {
   LOW, LOW, 
   LOW, LOW,
@@ -59,6 +103,11 @@ byte interrupter = 255;
 void(* reset) (void) = 0;
 
 void setup() {
+  noInterrupts();
+  pixels.begin();
+  interrupts();
+
+  // TODO: validate board feature combinations
   address = EEPROM.read(0);
 
   Serial.begin(115200);
@@ -101,25 +150,37 @@ void setup() {
   #endif
 
   for (byte i = 0; i < 5; ++i) {
-    if (BOARD_FEATURES[i] & BOARD_FEATURE_ENCODER) {
-      pinMode(ENCODER_PINS[i*2], INPUT_PULLUP);
-      pinMode(ENCODER_PINS[i*2 + 1], INPUT_PULLUP);
+    const byte boardFeatures = BOARD_FEATURES[i];
+
+    if (boardFeatures & BOARD_FEATURE_ENCODER) {
+      pinMode(ENCODER_PINS[i][0], INPUT_PULLUP);
+      pinMode(ENCODER_PINS[i][1], INPUT_PULLUP);
     }
 
-    if (BOARD_FEATURES[i] & BOARD_FEATURE_BUTTON) {
+    if (boardFeatures & BOARD_FEATURE_BUTTON) {
       pinMode(BUTTON_PINS[i], INPUT_PULLUP);
     }
 
-    if (BOARD_FEATURES[i] & BOARD_FEATURE_POT) {
+    if (boardFeatures & BOARD_FEATURE_POT) {
       // TODO: anything needed here?
     }
     
-    if (BOARD_FEATURES[i] & BOARD_FEATURE_TOUCH) {
+    if (boardFeatures & BOARD_FEATURE_TOUCH) {
       pinMode(TOUCH_PINS[i], INPUT);
+    }
+
+    if (BOARD_FEATURES[i] & BOARD_FEATURE_PADS) {
+      for (byte j = 0; j < 4; ++j) {
+        #if USART_DEBUG_ENABLED
+        Serial.print("Configuring pin as input: ");
+        Serial.println(PAD_PINS[i][j]);
+        #endif
+        pinMode(PAD_PINS[i][j], INPUT_PULLUP);
+      }
     }
   }
 
-  // TODO: Move interupt initializations to loop above
+  // TODO: Move interrupt initializations to loop above
   PCICR |= (1 << PCIE0) | (1 << PCIE1) | (1 << PCIE2);
   
   #ifndef USART_DEBUG_ENABLED
@@ -161,6 +222,25 @@ void setup() {
     PCMSK1 |= 1 << SWR_INT;
   }
 
+  if (BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_PADS) {
+    enablePCINT(SWL);
+    enablePCINT(ENCL1A);
+    enablePCINT(ENCL1B);
+    enablePCINT(ENCL2A);
+  }
+
+  if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_PADS) {
+    enablePCINT(SW1);
+    enablePCINT(ENC1B);
+    enablePCINT(ENC1A);
+    enablePCINT(TOUCH); // TODO: fix  POT -> TOUCH on board
+  }
+  
+  if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_PADS) {
+    PCMSK0 |= (1 << ENCR1A_INT) | (1 << ENCR1B_INT) | (1 << ENCR2A_INT);
+    PCMSK1 |= 1 << SWR_INT;
+  }
+
   // TODO: initialize according to enabled buttons
   switchStates = previousSwitchStates = PINC & SW_INTS_MASK; // TODO: construct mask according to enabled buttons
   // TODO: initialize touch states
@@ -168,14 +248,15 @@ void setup() {
 
 void loop() {
   // TODO: check touch
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   if (previousSwitchStates != switchStates) {
-    #ifdef USART_DEBUG_ENABLED
+    #if USART_DEBUG_ENABLED
     Serial.print("SWITCHES: ");
     Serial.println(switchStates);
     #endif
     byte changed = previousSwitchStates ^ switchStates;
     previousSwitchStates = switchStates;
-    #ifdef USART_DEBUG_ENABLED
+    #if USART_DEBUG_ENABLED
     Serial.print("Changed: ");
     Serial.println(changed);
     #endif
@@ -188,18 +269,77 @@ void loop() {
       }
     }
   }
-  
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_TOUCH)
+  if (previousTouchStates != touchStates) {
+    #if USART_DEBUG_ENABLED
+    Serial.print("TOUCHES: ");
+    Serial.println(touchStates);
+    #endif
+    byte changed = previousTouchStates ^ touchStates;
+    previousTouchStates = touchStates;
+    #if USART_DEBUG_ENABLED
+    Serial.print("Changed: ");
+    Serial.println(changed);
+    #endif
+    // TODO:
+    if (changed) {
+      for (byte i = 0; i < 3; ++i) {
+        byte switchMask = (1 << SW_INTS[i]);
+        if (changed & switchMask) {
+          handleButtonChange(i, (switchStates & switchMask) ? 0 : 1);
+        }
+      }
+    }
+  }
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+  for (byte board = 0; board < 3; board++) {
+    const byte padStateIndex = board - 1;
+    const byte boardPadStates = padStates[padStateIndex];
+    const byte previousBoardPadStates = previousPadStates[padStateIndex];
+    if (previousBoardPadStates != boardPadStates) {
+      #if USART_DEBUG_ENABLED
+      Serial.print("BOARD: ");
+      Serial.println(board);
+      #endif
+      byte changed = previousBoardPadStates ^ boardPadStates;
+      previousPadStates[padStateIndex] = boardPadStates;
+      #if USART_DEBUG_ENABLED
+      Serial.print("Changed: ");
+      Serial.println(changed);
+      #endif
+      if (changed) {
+        for (byte i = 0; i < 4; ++i) {
+          byte padMask = (1 << i);
+          if (changed & padMask) {
+            byte pinState = (boardPadStates & padMask) ? 1 : 0;
+            noInterrupts();
+            pixels.setPixelColor((board == BOARD_L1 ? 4 : 0) + i, pixels.Color(0, pinState ? 0 : 70, 0));
+            pixels.show();
+            interrupts();
+            handleButtonChange(i, pinState);
+          }
+        }
+      }
+    }
+  }
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_ENCODER) || ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_POT) // TODO: separate encoder and pot?
   for (int i = 0; i < 5; ++i) {
     int position;
     byte positionChanged = false;
     
     if (BOARD_FEATURES[i] & BOARD_FEATURE_ENCODER) {
-      position = encoders[i].getPosition(); // TODO: use getDirection or create separate relative encoder feature
+      position = (*encoders[i]).getPosition(); // TODO: use getDirection or create separate relative encoder feature
       positionChanged = position != positions[i];
       
-      #ifdef USART_DEBUG_ENABLED
-      byte stateA = digitalRead(ENCODER_PINS[2*i]);
-      byte stateB = digitalRead(ENCODER_PINS[2*i+1]);
+      #if USART_DEBUG_ENABLED
+      byte stateA = digitalRead(ENCODER_PINS[i][0]);
+      byte stateB = digitalRead(ENCODER_PINS[i][1]);
   
       if (stateA != states[2*i] || stateB != states[2*i+1]) {
         Serial.print("Interrupter: ");
@@ -227,8 +367,9 @@ void loop() {
       positions[i] = position;
     }
   }
+  #endif
 
-  #ifdef USART_DEBUG_ENABLED 
+  #if USART_DEBUG_ENABLED
   if (Serial.available()) {        // If anything comes in Serial,
     Serial.write(Serial.read());   // read it and send it out
   }
@@ -250,28 +391,108 @@ void sendMessage(byte input, byte value, ControlType type) {
   Wire.endTransmission();
 }
 
+inline byte readPadPin(byte board, byte pin) {
+  Serial.print("Reading: ");
+  Serial.println(PAD_PINS[board][pin]);
+  Serial.print("Value: ");
+  Serial.println(digitalRead(PAD_PINS[board][pin]));
+  return (digitalRead(PAD_PINS[board][pin]) == LOW ? 0 : 1) << pin;
+}
+
+inline void updatePadStates() {
+  for (byte board = 1; board < 4; ++board) { // Pads and buttons not available on leftmost and rightmost boards
+    if (BOARD_FEATURES[board] & BOARD_FEATURE_PADS) {
+      const byte padStateIndex = board - 1;
+      padStates[padStateIndex] = readPadPin(board, 3) | readPadPin(board, 2) | readPadPin(board, 1) | readPadPin(board, 0);
+      #if USART_DEBUG_ENABLED
+      Serial.print("BOARD PADS ");
+      Serial.println(board);
+      Serial.print("States: ");
+      Serial.println(padStates[padStateIndex]);
+      #endif
+    }
+  }
+}
+
+inline void updateSwitchStates() {
+  switchStates = PINC &
+    (!!(BOARD_FEATURES[1] & BOARD_FEATURE_BUTTON) << SW_INTS[1]) |
+    (!!(BOARD_FEATURES[2] & BOARD_FEATURE_BUTTON) << SW_INTS[2]) |
+    (!!(BOARD_FEATURES[3] & BOARD_FEATURE_BUTTON) << SW_INTS[3]);
+}
+
+inline void updateTouchStates() {
+  for (byte i = 1; i < 4; ++i) { // Pads and buttons not available on leftmost and rightmost boards
+    if (BOARD_FEATURES[i] & BOARD_FEATURE_TOUCH) {
+      touchStates |= TOUCH_PINS[i];
+    }
+  }
+}
+
 ISR(PCINT0_vect) {
+#if USART_DEBUG_ENABLED
   interrupter = 0;
-  encoders[BOARD_R1].tick();
-  encoders[BOARD_R2].tick();
+#endif
+
+#if HAS_FEATURE(R1, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_R1]).tick();
+#endif
+
+#if HAS_FEATURE(R2, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_R2]).tick();
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+  updatePadStates();
+#endif
 }
 
 ISR(PCINT1_vect) {
+#if USART_DEBUG_ENABLED
   interrupter = 1;
-  encoders[BOARD_M].tick();
+#endif
 
-  // TODO: test if boards have buttons
-  switchStates = PINC & SW_INTS_MASK;
+#if HAS_FEATURE(M, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_M]).tick();
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+  updatePadStates();
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+  updateSwitchStates();
+#endif
 }
 
 ISR(PCINT2_vect) {
+#if USART_DEBUG_ENABLED
   interrupter = 2;
-  // TODO: is it ok to tick even if not using encoders?
-  encoders[BOARD_M].tick();
-  encoders[BOARD_L1].tick();
-  #ifndef USART_DEBUG_ENABLED 
-  encoders[BOARD_L2].tick();
-  #endif
+#endif
 
-  touchStates = digitalRead(TOUCH) << BOARD_M | digitalRead(SWL) << BOARD_L1 | digitalRead(SWR) << BOARD_R1; // TODO: only read pin values if touch features are enabled
+#if HAS_FEATURE(M, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_M]).tick();
+#endif
+
+#if HAS_FEATURE(L1, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_L1]).tick();
+#endif
+
+#ifndef USART_DEBUG_ENABLED
+#if HAS_FEATURE(L2, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_L2]).tick();
+#endif
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+  updatePadStates();
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
+  updateSwitchStates();
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_TOUCH)
+  updateTouchStates();
+#endif
 }
