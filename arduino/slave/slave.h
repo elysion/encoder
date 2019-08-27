@@ -1,7 +1,7 @@
 #ifndef SLAVE_H
 #define SLAVE_H
 
-#define NOT_POSSIBLE -1
+#include <stdint.h>
 
 byte POT_CHANGE_THRESHOLD = 5;
 
@@ -13,7 +13,13 @@ enum Board {
   BOARD_R2
 };
 
+enum EncoderType {
+  ENCODER_TYPE_RELATIVE,
+  ENCODER_TYPE_ABSOLUTE
+};
+
 #define NO_BOARD (0)
+#define BOARD_FEATURE_ENCODER _BV(0)
 #define BOARD_FEATURE_ENCODER _BV(0)
 #define BOARD_FEATURE_BUTTON _BV(1)
 #define BOARD_FEATURE_POT _BV(2)
@@ -30,21 +36,21 @@ const byte ENCODER_PINS[5][2] = {
 };
 
 const byte BUTTON_PINS[] = {
-  NOT_POSSIBLE,
+  (byte) NOT_POSSIBLE,
   SWL,
   SW1,
   SWR
 };
 
 const byte POT_PINS[] = {
-  NOT_POSSIBLE,
+  (byte) NOT_POSSIBLE,
   POTL,
   POT1,
   POTR
 };
 
 const byte TOUCH_PINS[] = {
-  NOT_POSSIBLE,
+  (byte) NOT_POSSIBLE,
   ENCL2B,
   TOUCH,
   ENCR2B
