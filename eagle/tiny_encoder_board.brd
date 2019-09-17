@@ -229,6 +229,7 @@ http://www.axon-cable.com/publications/FFC-Flat-Cables.pdf</text>
 <text x="28.194" y="27.1272" size="0.8128" layer="21" rot="R135">R</text>
 <dimension x1="5.08" y1="1.016" x2="28.067" y2="1.016" x3="16.5735" y3="-6.9088" textsize="1.778" layer="48"/>
 <dimension x1="28.067" y1="1.016" x2="28.067" y2="24.6126" x3="39.5224" y3="12.8143" textsize="1.778" layer="48"/>
+<text locked="yes" x="21.4376" y="1.8796" size="1.778" layer="26" rot="MR0">v1.0.0</text>
 </plain>
 <libraries>
 <library name="edge">

@@ -243,7 +243,7 @@ board</text>
 <dimension x1="0" y1="0" x2="33.655" y2="0" x3="16.8275" y3="-4.4704" textsize="1.778" layer="48"/>
 <text x="4.9022" y="21.0058" size="0.762" layer="26" rot="MR0">to µC
 board</text>
-<text x="26.7208" y="26.2382" size="0.762" layer="25">v1</text>
+<text locked="yes" x="25.6032" y="26.289" size="0.762" layer="25">v1.0.0</text>
 <wire x1="14.5542" y1="1.143" x2="14.5542" y2="3.9878" width="0.2032" layer="21"/>
 <wire x1="14.5542" y1="3.9878" x2="13.4112" y2="3.9878" width="0.2032" layer="21"/>
 <wire x1="13.4112" y1="3.9878" x2="13.4112" y2="1.143" width="0.2032" layer="21"/>

@@ -289,6 +289,7 @@ http://www.axon-cable.com/publications/FFC-Flat-Cables.pdf</text>
 <text x="4.2164" y="14.224" size="1.778" layer="25">L</text>
 <dimension x1="0" y1="0" x2="36.322" y2="0" x3="18.161" y3="-4.8006" textsize="0.3556" layer="48"/>
 <dimension x1="0" y1="31.7246" x2="0" y2="0" x3="-9.525" y3="15.8623" textsize="0.3556" layer="48"/>
+<text locked="yes" x="10.8204" y="31.115" size="1.778" layer="26" rot="MR180">v1.0.0</text>
 </plain>
 <libraries>
 <library name="SparkFun-Capacitors">
