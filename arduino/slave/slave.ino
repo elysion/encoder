@@ -13,8 +13,8 @@ Adafruit_NeoPixel led2Pixels(LED_COUNT_R, LED2, NEO_GRB + NEO_KHZ800); // TODO s
 
 volatile byte address;
 
-byte switchStates;
-byte previousSwitchStates;
+byte switchStates = 0;
+byte previousSwitchStates = 0;
 
 byte touchStates;
 byte previousTouchStates;
@@ -98,6 +98,9 @@ void(* reset) (void) = 0;
 
 void setup() {
   //TODO: check that boards have leds!
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
+  
   #if LED_COUNT_LM != 0
   led1Pixels.begin();
   led1Pixels.fill(led1Pixels.ColorHSV(0, 255, 255), 0);
@@ -156,8 +159,10 @@ void setup() {
     Wire.begin(address);
     sendMessage(DEBUG_BOOT, 255, CONTROL_TYPE_DEBUG);
   }
+  sendMessage(DEBUG_BOOT, 254, CONTROL_TYPE_DEBUG);
 
   for (byte i = 0; i < 5; ++i) {
+    sendMessage(DEBUG_BOOT, 253, CONTROL_TYPE_DEBUG);
     const byte boardFeatures = BOARD_FEATURES[i];
 
     if (boardFeatures & BOARD_FEATURE_ENCODER) {
@@ -197,7 +202,8 @@ void setup() {
   // TODO: use enablePCINT
   if (BOARD_FEATURES[BOARD_L2] & BOARD_FEATURE_ENCODER) {
 #if PCB_VERSION == 1
-    PCMSK1 |= (1 << ENCL2A_INT) | (1 << ENCL2B_INT);
+    enablePCINT(ENCL2A);
+    enablePCINT(ENCL2B);
 #elif PCB_VERSION == 2
     PCMSK2 |= (1 << ENCL2A_INT) | (1 << ENCL2B_INT);
 #else
@@ -206,14 +212,15 @@ static_assert(false, "Unknown PCB")
   }
 
   if (BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_ENCODER) {
-    PCMSK2 |= (1 << ENCL1A_INT) | (1 << ENCL1B_INT);
+    enablePCINT(ENCL1A);
+    enablePCINT(ENCL1B);
   }
 
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_ENCODER) {
     // TODO: generalize this so that you can use INT -> PCMSK. How about enablePCINT?
 #if PCB_VERSION == 1
-    PCMSK2 |= (1 << ENC1B_INT);
-    PCMSK2 |= (1 << ENC1A_INT);
+    enablePCINT(ENC1A);
+    enablePCINT(ENC1B);
 #elif PCB_VERSION == 2
     PCMSK1 |= (1 << ENC1B_INT);
     PCMSK2 |= (1 << ENC1A_INT);
@@ -223,13 +230,14 @@ static_assert(false, "Unknown PCB")
   }
   
   if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_ENCODER) {
-    PCMSK0 |= (1 << ENCR1A_INT) | (1 << ENCR1B_INT);
+    enablePCINT(ENCR1A);
+    enablePCINT(ENCR1B);
   }
 
   if (BOARD_FEATURES[BOARD_R2] & BOARD_FEATURE_ENCODER) {
 #if PCB_VERSION == 1
-    PCMSK1 |= (1 << ENCR2A_INT);
-    PCMSK0 |= (1 << ENCR2B_INT);
+    enablePCINT(ENCR2A);
+    enablePCINT(ENCR2B);
 #elif PCB_VERSION == 2
     PCMSK0 |= (1 << ENCR2A_INT) | (1 << ENCR2B_INT);
 #else
@@ -275,16 +283,18 @@ static_assert(false, "Unknown PCB")
   }
 
   // TODO: initialize according to enabled buttons
-  switchStates = previousSwitchStates = PINC & SW_INTS_MASK; // TODO: construct mask according to enabled buttons
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
+  updateSwitchStates();
+  previousSwitchStates = switchStates;
+#endif
   // TODO: initialize touch states
 }
-
 
 byte portB = PINB;
 byte portC = PINC;
 byte portD = PIND;
 
-void printPortStateChanges() {
+inline void printPortStateChanges() {
   #if defined(I2C_DEBUG_ENABLED) && defined(PORT_STATE_DEBUG)
   byte maskedB = PINB & 0b11000011;
   byte maskedC = PINC & 0b11001111;
@@ -304,10 +314,11 @@ void printPortStateChanges() {
   #endif
 }
 
-void printEncoderStates(byte i) {
+inline void printEncoderStates(byte i) {
   byte stateA = digitalRead(ENCODER_PINS[i][0]);
   byte stateB = digitalRead(ENCODER_PINS[i][1]);
 
+#if defined(USART_DEBUG_ENABLED) || defined(I2C_DEBUG_ENABLED)
   if (stateA != states[2*i] || stateB != states[2*i+1]) {
     #if defined(INTERRUPT_DEBUG) && defined(USART_DEBUG_ENABLED)
     Serial.print("Interrupter: ");
@@ -324,20 +335,19 @@ void printEncoderStates(byte i) {
     sendMessage(3, stateA, CONTROL_TYPE_DEBUG);
     sendMessage(3, stateB, CONTROL_TYPE_DEBUG);
     sendMessage(4, interrupter, CONTROL_TYPE_DEBUG);
-    sendMessage(5, position, CONTROL_TYPE_DEBUG);
-    sendMessage(6, positionChange, CONTROL_TYPE_DEBUG);
     sendMessage(7, ticks, CONTROL_TYPE_DEBUG);
     #endif
     
     states[2*i] = stateA;
     states[2*i+1] = stateB;
   }
+#endif
 }
 
 void loop() {
-  #if defined(USART_DEBUG_ENABLED) || defined(I2C_DEBUG_ENABLED)
+#if defined(USART_DEBUG_ENABLED) || defined(I2C_DEBUG_ENABLED)
   printPortStateChanges();
-  #endif
+#endif
 
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   if (previousSwitchStates != switchStates) {
@@ -346,7 +356,7 @@ void loop() {
     Serial.println(switchStates);
     #endif
     #ifdef I2C_DEBUG_ENABLED
-    sendMessage(10, switchStates, CONTROL_TYPE_DEBUG);
+    sendMessage(11, switchStates, CONTROL_TYPE_DEBUG);
     #endif
     byte changed = previousSwitchStates ^ switchStates;
     previousSwitchStates = switchStates;
@@ -355,7 +365,7 @@ void loop() {
     Serial.println(changed);
     #endif
     #ifdef I2C_DEBUG_ENABLED
-    sendMessage(10, changed, CONTROL_TYPE_DEBUG);
+    sendMessage(12, changed, CONTROL_TYPE_DEBUG);
     #endif
     if (changed) {
       for (byte i = BOARD_L1; i < BOARD_R2; ++i) {
@@ -460,10 +470,19 @@ void loop() {
       if (encoderType == ENCODER_TYPE_RELATIVE) { // TODO: handle pots
         const byte value = positionChange > 0 ? 1 : 255;
         // TODO: is this what is causing the slowness of the sending?
-        for (byte j = 0; j < abs(positionChange); ++j) {
-          handlePositionChange(i, value);
+        /*
+        if (abs(positionChange) > 10) {
+          //Address: 88, Control: 100, Debug: out of bounds!, Value: 255
+          sendMessage(100, abs(positionChange), CONTROL_TYPE_DEBUG);
+        } else {
+          sendMessage(101, abs(positionChange), CONTROL_TYPE_DEBUG);
         }
+        */
+        //for (byte j = 0; j < constrain(abs(positionChange), 0, 10); ++j) {
+          handlePositionChange(i, value);
+        //}
       } else {
+        sendMessage(200, i, CONTROL_TYPE_DEBUG);
         handlePositionChange(i, position);
         /* TODO: Check that the board have leds / update only according to input / only for absolute encoders
         Adafruit_NeoPixel *pixels = i <= BOARD_M ? (&led1Pixels) : (&led2Pixels);
@@ -476,7 +495,7 @@ void loop() {
     }
   }
   #endif
-
+  
   #ifdef USART_DEBUG_ENABLED
   if (Serial.available()) {        // If anything comes in Serial,
     Serial.write(Serial.read());   // read it and send it out
@@ -537,15 +556,16 @@ inline void updatePadStates() {
 
 inline void updateSwitchStates() {
   // TODO: use HAS_FEATURE macro?
-  switchStates = PINC &
-    ((!!(BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_BUTTON) << SW_INTS[BOARD_L1]) |
-    (!!(BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_BUTTON) << SW_INTS[BOARD_M]) |
-    (!!(BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_BUTTON) << SW_INTS[BOARD_R1]));
+  switchStates = SWITCH_PORT &
+    ((!!(BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_BUTTON) << digitalPinToPCMSKbit(SWL)) |
+    (!!(BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_BUTTON) << digitalPinToPCMSKbit(SW1)) |
+    (!!(BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_BUTTON) << digitalPinToPCMSKbit(SWR)));
 }
 
 inline void updateTouchStates() {
   for (byte i = 1; i < 4; ++i) { // Pads and buttons not available on leftmost and rightmost boards
     if (BOARD_FEATURES[i] & BOARD_FEATURE_TOUCH) {
+      // TODO: Wut? What's this?
       touchStates |= TOUCH_PINS[i];
     }
   }
@@ -581,12 +601,12 @@ inline void updateControls() {
   updatePadStates();
 #endif
 
-#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
-  updateSwitchStates();
-#endif
-
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_TOUCH)
   updateTouchStates();
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
+  updateSwitchStates();
 #endif
 }
 
