@@ -11,6 +11,11 @@ enum Board {
   BOARD_R2
 };
 
+enum EncoderType {
+  ENCODER_TYPE_RELATIVE,
+  ENCODER_TYPE_ABSOLUTE
+};
+
 #define NO_BOARD (0)
 #define BOARD_FEATURE_ENCODER _BV(0)
 #define BOARD_FEATURE_BUTTON _BV(1)
