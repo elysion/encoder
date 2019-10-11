@@ -11,7 +11,12 @@
 #include "slave.h"
 
 const uint16_t PixelCount = 8;
-const uint8_t PixelPin = LED1;  // A1 // make sure to set this to the correct pin, ignored for Esp8266
+#if PCB_VERSION == 3
+const uint8_t PixelPin = LEDL;
+#else
+const uint8_t PixelPin = LED1;
+#endif
+
 Adafruit_NeoPixel pixels(PixelCount, PixelPin, NEO_GRB + NEO_KHZ800);
 
 volatile int address;
@@ -19,8 +24,10 @@ volatile int address;
 byte switchStates;
 byte previousSwitchStates;
 
+#if PCB_VERSION != 3 // TODO
 byte touchStates;
 byte previousTouchStates;
+#endif
 
 byte padStates[] =  {
   0b00001111,
@@ -48,11 +55,26 @@ RotaryEncoder* encoders[BOARD_COUNT] = {
   0
   #endif
   ,
+#if PCB_VERSION == 3
+  #if BOARD_FEATURES_M1 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_M1][0], ENCODER_PINS[BOARD_M1][1])
+  #else
+  0
+  #endif
+  ,
+  #if BOARD_FEATURES_M2 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_M2][0], ENCODER_PINS[BOARD_M2][1])
+  #else
+  0
+  #endif
+#else
   #if BOARD_FEATURES_M & BOARD_FEATURE_ENCODER
   new RotaryEncoder(ENCODER_PINS[BOARD_M][0], ENCODER_PINS[BOARD_M][1])
   #else
   0
   #endif
+#endif
+  
   ,
   #if BOARD_FEATURES_R1 & BOARD_FEATURE_ENCODER
   new RotaryEncoder(ENCODER_PINS[BOARD_R1][0], ENCODER_PINS[BOARD_R1][1])
@@ -71,6 +93,9 @@ int positions[] = {
   0, 
   0,
   0,
+#if PCB_VERSION == 3
+  0,
+#endif
   0, 
   0
 };
@@ -80,6 +105,9 @@ byte states[] = {
   LOW, LOW, 
   LOW, LOW,
   LOW, LOW,
+#if PCB_VERSION == 3
+  LOW, LOW,
+#endif
   LOW, LOW, 
   LOW, LOW
 };
@@ -136,7 +164,7 @@ void setup() {
   Serial.end();
   #endif
 
-  for (byte i = 0; i < 5; ++i) {
+  for (byte i = 0; i < BOARD_COUNT; ++i) {
     const byte boardFeatures = BOARD_FEATURES[i];
 
     if (boardFeatures & BOARD_FEATURE_ENCODER) {
@@ -151,11 +179,14 @@ void setup() {
     if (boardFeatures & BOARD_FEATURE_POT) {
       // TODO: anything needed here?
     }
-    
+
+#if PCB_VERSION != 3 // TODO
     if (boardFeatures & BOARD_FEATURE_TOUCH) {
       pinMode(TOUCH_PINS[i], INPUT);
     }
+#endif
 
+#if PCB_VERSION != 3 // TODO
     if (BOARD_FEATURES[i] & BOARD_FEATURE_PADS) {
       for (byte j = 0; j < 4; ++j) {
         #if USART_DEBUG_ENABLED
@@ -164,7 +195,8 @@ void setup() {
         #endif
         pinMode(PAD_PINS[i][j], INPUT_PULLUP);
       }
-    }
+    } 
+#endif
   }
 
   // TODO: Move interrupt initializations to loop above
@@ -180,10 +212,21 @@ void setup() {
     PCMSK2 |= (1 << ENCL1A_INT) | (1 << ENCL1B_INT);
   }
 
+#if PCB_VERSION == 3
+  if (BOARD_FEATURES[BOARD_M1] & BOARD_FEATURE_ENCODER) {
+    PCMSK2 |= (1 << ENCM1B_INT);
+    PCMSK2 |= (1 << ENCM1A_INT);
+  }
+  if (BOARD_FEATURES[BOARD_M2] & BOARD_FEATURE_ENCODER) {
+    PCMSK2 |= (1 << ENCM2B_INT);
+    PCMSK2 |= (1 << ENCM2A_INT);
+  }
+#else
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_ENCODER) {
     PCMSK1 |= (1 << ENC1B_INT);
     PCMSK2 |= (1 << ENC1A_INT);
   }
+#endif
   
   if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_ENCODER) {
     PCMSK0 |= (1 << ENCL1A_INT) | (1 << ENCL1B_INT);
@@ -193,19 +236,32 @@ void setup() {
     PCMSK0 |= (1 << ENCR2A_INT) | (1 << ENCR2B_INT);
   }
 
-  if (BOARD_FEATURES[BOARD_L1] & (BOARD_FEATURE_BUTTON | BOARD_FEATURE_TOUCH)) {
+  if (BOARD_FEATURES[BOARD_L1] & (BOARD_FEATURE_BUTTON
+#if PCB_VERSION != 3 // TODO
+  | BOARD_FEATURE_TOUCH
+#endif
+  )) {
     PCMSK1 |= 1 << SWL_INT;
   }
-    
+
+#if PCB_VERSION == 3
+  if (BOARD_FEATURES[BOARD_M1] & BOARD_FEATURE_BUTTON) {
+    PCMSK1 |= 1 << SWM_INT; // TODO: check this
+  }
+#else
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_BUTTON) {
     PCMSK1 |= 1 << SWM_INT;
   }
-
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_TOUCH) {
     PCMSK1 |= 1 << TOUCH_INT;
   }
-    
-  if (BOARD_FEATURES[BOARD_R1] & (BOARD_FEATURE_BUTTON | BOARD_FEATURE_TOUCH)) {
+#endif
+
+  if (BOARD_FEATURES[BOARD_R1] & (BOARD_FEATURE_BUTTON 
+#if PCB_VERSION != 3 // TODO
+  | BOARD_FEATURE_TOUCH
+#endif
+  )) {
     PCMSK1 |= 1 << SWR_INT;
   }
 
@@ -216,12 +272,14 @@ void setup() {
     enablePCINT(ENCL2A);
   }
 
+#if PCB_VERSION != 3 // TODO
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_PADS) {
     enablePCINT(SWM);
     enablePCINT(ENC1B);
     enablePCINT(ENC1A);
     enablePCINT(TOUCH); // TODO: fix  POT -> TOUCH on board
   }
+#endif
   
   if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_PADS) {
     PCMSK0 |= (1 << ENCR1A_INT) | (1 << ENCR1B_INT) | (1 << ENCR2A_INT);
@@ -258,6 +316,7 @@ void loop() {
   }
 #endif
 
+#if PCB_VERSION != 3 // TODO
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_TOUCH)
   if (previousTouchStates != touchStates) {
     #if USART_DEBUG_ENABLED
@@ -281,7 +340,9 @@ void loop() {
     }
   }
 #endif
+#endif
 
+#if PCB_VERSION != 3 // TODO
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
   for (byte board = 0; board < 3; board++) {
     const byte padStateIndex = board - 1;
@@ -314,9 +375,10 @@ void loop() {
     }
   }
 #endif
+#endif
 
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_ENCODER) || ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_POT) // TODO: separate encoder and pot?
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i < BOARD_COUNT; ++i) {
     int position;
     byte positionChanged = false;
     
@@ -378,6 +440,7 @@ void sendMessage(byte input, byte value, ControlType type) {
   Wire.endTransmission();
 }
 
+#if PCB_VERSION != 3 // TODO
 inline byte readPadPin(byte board, byte pin) {
   Serial.print("Reading: ");
   Serial.println(PAD_PINS[board][pin]);
@@ -400,6 +463,7 @@ inline void updatePadStates() {
     }
   }
 }
+#endif
 
 inline void updateSwitchStates() {
   switchStates = PINC &
@@ -408,6 +472,7 @@ inline void updateSwitchStates() {
     (!!(BOARD_FEATURES[3] & BOARD_FEATURE_BUTTON) << SW_INTS[3]);
 }
 
+#if PCB_VERSION != 3 // TODO
 inline void updateTouchStates() {
   for (byte i = 1; i < 4; ++i) { // Pads and buttons not available on leftmost and rightmost boards
     if (BOARD_FEATURES[i] & BOARD_FEATURE_TOUCH) {
@@ -415,22 +480,33 @@ inline void updateTouchStates() {
     }
   }
 }
+#endif
 
 ISR(PCINT0_vect) {
 #if USART_DEBUG_ENABLED
   interrupter = 0;
 #endif
 
-#if HAS_FEATURE(R1, BOARD_FEATURE_ENCODER)
-  (*encoders[BOARD_R1]).tick();
-#endif
-
 #if HAS_FEATURE(R2, BOARD_FEATURE_ENCODER)
   (*encoders[BOARD_R2]).tick();
 #endif
 
+#if PCB_VERSION == 3
+
+#if HAS_FEATURE(M2, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_M2]).tick();
+#endif
+
+#else
+
+#if HAS_FEATURE(R1, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_R1]).tick();
+#endif
+
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
   updatePadStates();
+#endif
+
 #endif
 }
 
@@ -439,15 +515,24 @@ ISR(PCINT1_vect) {
   interrupter = 1;
 #endif
 
+#if PCB_VERSION == 3
+
+#if HAS_FEATURE(L1, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_L1]).tick();
+#endif
+
+#else
+
 #if HAS_FEATURE(M, BOARD_FEATURE_ENCODER)
   (*encoders[BOARD_M]).tick();
 #endif
-
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
   updatePadStates();
 #endif
 
-#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   updateSwitchStates();
 #endif
 }
@@ -457,13 +542,32 @@ ISR(PCINT2_vect) {
   interrupter = 2;
 #endif
 
+#if PCB_VERSION == 3
+
+#if HAS_FEATURE(M1, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_M1]).tick();
+#endif
+#if HAS_FEATURE(L2, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_M2]).tick();
+#endif
+#if HAS_FEATURE(R1, BOARD_FEATURE_ENCODER)
+  (*encoders[BOARD_R1]).tick();
+#endif
+
+#else
+
 #if HAS_FEATURE(M, BOARD_FEATURE_ENCODER)
   (*encoders[BOARD_M]).tick();
 #endif
-
 #if HAS_FEATURE(L1, BOARD_FEATURE_ENCODER)
   (*encoders[BOARD_L1]).tick();
 #endif
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+  updatePadStates();
+#endif
+
+#endif
+
 
 #ifndef USART_DEBUG_ENABLED
 #if HAS_FEATURE(L2, BOARD_FEATURE_ENCODER)
@@ -471,15 +575,13 @@ ISR(PCINT2_vect) {
 #endif
 #endif
 
-#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
-  updatePadStates();
-#endif
-
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   updateSwitchStates();
 #endif
 
+#if PCB_VERSION != 3 // TODO
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_TOUCH)
   updateTouchStates();
+#endif
 #endif
 }

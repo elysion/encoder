@@ -6,7 +6,12 @@ static const byte POT_CHANGE_THRESHOLD = 5;
 enum Board {
   BOARD_L2,
   BOARD_L1,
+#if PCB_VERSION == 3
+  BOARD_M1,
+  BOARD_M2,
+#else
   BOARD_M,
+#endif
   BOARD_R1,
   BOARD_R2
 };
@@ -24,10 +29,15 @@ enum EncoderType {
 #define BOARD_FEATURE_PADS _BV(4)
 #define BOARD_FEATURE_LED _BV(5)
 
-static const byte ENCODER_PINS[5][2] = {
+static const byte ENCODER_PINS[BOARD_COUNT][2] = {
   {ENCL2A, ENCL2B},
   {ENCL1A, ENCL1B},
+#if PCB_VERSION == 3
+  {ENCM1A, ENCM1B},
+  {ENCM2A, ENCM2B},
+#else
   {ENC1A, ENC1B},
+#endif
   {ENCR1A, ENCR1B},
   {ENCR2A, ENCR2B}
 };
@@ -46,19 +56,23 @@ static const byte POT_PINS[] = {
   POTR
 };
 
+#if PCB_VERSION != 3
 static const byte TOUCH_PINS[] = {
   NOT_POSSIBLE,
   ENCL2B,
   TOUCH,
   ENCR2B
 };
+#endif
 
+#if PCB_VERSION != 3
 static const byte PAD_PINS[][4] {
   {},
   {ENCL2A, ENCL1B, ENCL1A, SWL},
-  {TOUCH, ENC1B, ENC1A, SW1},
+  {TOUCH, ENC1B, ENC1A, SWM}, // TODO: check version 3
   {ENCR1B, ENCR1A, ENCR2A, SWR}
 };
+#endif
 
 #define HAS_FEATURE(BOARD, feature) (BOARD_FEATURES_##BOARD & feature)
 #define HAS_PADS(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_PADS))
