@@ -114,10 +114,26 @@ byte states[] = {
 #endif
 
 byte interrupter = 255;
+#define LED_BUILTIN_AVAILABLE (BOARD_FEATURES_R2 == NO_BOARD) // TODO: only disable when R2 uses encoder? (How does the pull-up on the pin affect this need?) 
 
 void(* reset) (void) = 0;
 
+inline void togglePin(byte outputPin) {
+  digitalWrite(outputPin, !digitalRead(outputPin));
+}
+
+inline void toggleBuiltinLed() {
+#if PCB_VERSION == 3 && LED_BUILTIN_AVAILABLE
+    togglePin(LED_BUILTIN);
+#endif
+}
+
 void setup() {
+  if (LED_BUILTIN_AVAILABLE) {
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
+  }
+  
   noInterrupts();
   pixels.begin();
   interrupts();
@@ -131,6 +147,7 @@ void setup() {
   Serial.println(address);
   
  if (address == 255 || address < 10) {
+    toggleBuiltinLed();
     Serial.print("Address: ");
     Serial.println(address);
     Serial.println("Requesting address from master");
@@ -159,6 +176,8 @@ void setup() {
     Wire.begin(address);
     sendMessage(DEBUG_BOOT, 1, CONTROL_TYPE_DEBUG);
   }
+
+  toggleBuiltinLed();
 
   #ifndef USART_DEBUG_ENABLED
   Serial.end();
@@ -434,6 +453,7 @@ void handleButtonChange(byte input, byte state) {
 }
 
 void sendMessage(byte input, byte value, ControlType type) {
+  toggleBuiltinLed();
   Wire.beginTransmission(1);
   byte message[] = {address, input, type, value};
   Wire.write(message, 4);
