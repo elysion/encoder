@@ -71,9 +71,9 @@ static const uint8_t A7 = PIN_A7;
 // TODO
 #define digitalPinToPCICR(p)    (((p) >= 0 && (p) <= 21) ? (&PCICR) : (uint8_t*) 0)
 #define digitalPinToPCICRbit(p) (((p) <= 7) ? 2 : (((p) <= 13) ? 0 : 1)) // TODO
-#define digitalPinToPCMSK(p)    (((p) <= 2 || (p) >= 29 || ((p) >= 9 && (p) <= 11)) ? (&PCMSK2) : ((p) <= 17) ? (&PCMSK0) : ((p) <= 29) ? (&PCMSK1) : (uint8_t*) 0)
+#define digitalPinToPCMSK(p)    (((p) <= 2 || (p) > 29 || ((p) >= 9 && (p) <= 11)) ? (&PCMSK2) : ((p) <= 17) ? (&PCMSK0) : ((p) < 29) ? (&PCMSK1) : (uint8_t*) 0)
 //#define digitalPinToPCMSK(p)    (((p) <= 7) ? (&PCMSK2) : (((p) <= 13) ? (&PCMSK0) : (((p) <= 21) ? (&PCMSK1) : (uint8_t*) 0)))
-#define digitalPinToPCMSKbit(p) ((p) == 1 ? 3 : (p) == 2 ? 4 : (p) >= 30 ? (p - 30) : (p) >= 23 ? (p - 23) : (p) >= 12 ? (p - 12) : (p) >= 9 ? (p - 4) : -1)
+#define digitalPinToPCMSKbit(p) ((p) == 1 ? 3 : (p) == 2 ? 4 : (p) >= 30 ? (p - 30) : (p) >= 23 ? (p - 23) : (p) >= 12 ? (p - 12) : (p) >= 9 ? (p - 4) : (p) >= 7 ? (p - 1) : -1)
 //#define digitalPinToPCMSKbit(p) (((p) <= 7) ? (p) : (((p) <= 13) ? ((p) - 8) : ((p) - 14)))
 #define enablePCINT(p)					*digitalPinToPCMSK(p) |= (1<<digitalPinToPCMSKbit(p))
 
@@ -261,9 +261,42 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #define SERIAL_PORT_MONITOR   Serial
 #define SERIAL_PORT_HARDWARE  Serial
 
+#if PCB_VERSION == 3
+#define BOARD_COUNT 6
+#else
+#define BOARD_COUNT 5
+#endif
+
+
 // TODO: Update for new version / create a new header / define a version macro
+#if PCB_VERSION == 1
+// L2 MSK1
+#define ENCL2A (25)
+#define ENCL2B (26)
+// L1 MSK2
+#define ENCL1A (2)
+#define ENCL1B (32)
+// M MSK2
+#define ENC1A (31)
+#define ENC1B (30)
+// R1 MSK0
+#define ENCR1A (8)
+#define ENCR1B (7)
+// R2 MSK1 & MSK0
+#define ENCR2A (23)
+#define ENCR2B (13)
+
+// TODO: check the values below
+// MSK2
+#define SWL (1)
+#define SWM (11)
+#define SWR (9)
+#define SWITCH_PORT (PIND)
+#elif PCB_VERSION == 2 // TODO: these correspond to pins in i2c_encoder_4.*
 #define ENC1A (30)
 #define ENC1B (26)
+
+// TODO: check the values below
 #define ENCL1A (1)
 #define ENCL1B (2)
 #define ENCL2A (32)
@@ -272,17 +305,44 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #define ENCR1B (8)
 #define ENCR2A (12)
 #define ENCR2B (13)
-
-#define SW1 (23)
+#define SWM (23)
 #define SWL (24)
 #define SWR (25)
+#define SWITCH_PORT (PINC)
+#elif PCB_VERSION == 3 // TODO: these correspond to pins in i2c_encoder_6.*
+#define ENCM1A (32)
+#define ENCM1B (1)
+#define ENCM2A (7)
+#define ENCM2B (8)
+#define ENCL1A (23)
+#define ENCL1B (24)
+#define ENCL2A (31)
+#define ENCL2B (30)
+#define ENCR1A (9)
+#define ENCR1B (10)
+#define ENCR2A (12)
+#define ENCR2B (13)
+#define SWM (23)
+#define SWL (24)
+#define SWR (25)
+#endif
 
 #define TOUCH (11)
 
+#if PCB_VERSION == 3
+#define LEDL (25)
+#define LEDM (2)
+#define LEDR (11)
+#else
+#if PCB_VERSION == 1
+#define LED1 (24)
+#elif PCB_VERSION == 2
 #define LED1 (9)
+#endif
 #define LED2 (10)
+#endif
 
-#define POT1 SW1
+#define POTM SWM
 #define POTL SWL
 #define POTR SWR
 
@@ -290,8 +350,28 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 
 // TODO: Update for new version / create a new header / define a version macro
 // TODO: Use an array for defining PCMSK registers to use?
+#if PCB_VERSION == 1
+/*
+static const uint8_t ENC1A_INT = PCINT17;
+static const uint8_t ENC1B_INT = PCINT16;
+static const uint8_t ENCL1A_INT = PCINT20;
+static const uint8_t ENCL1B_INT = PCINT18;
+static const uint8_t ENCL2A_INT = PCINT10;
+static const uint8_t ENCL2B_INT = PCINT11;
+static const uint8_t ENCR1A_INT = PCINT7;
+static const uint8_t ENCR1B_INT = PCINT6;
+static const uint8_t ENCR2A_INT = PCINT8;
+static const uint8_t ENCR2B_INT = PCINT1;
+
+//NOTE: Current implementation expects the switches to be on the same port
+#define SWM_INT PCINT23
+#define SWL_INT PCINT19
+#define SWR_INT PCINT21
+ */
+#elif PCB_VERSION == 2
 static const uint8_t ENC1A_INT = PCINT16;
 static const uint8_t ENC1B_INT = PCINT11;
+// TODO: make sure the pins are correct below
 static const uint8_t ENCL1A_INT = PCINT19;
 static const uint8_t ENCL1B_INT = PCINT20;
 static const uint8_t ENCL2A_INT = PCINT18;
@@ -302,11 +382,36 @@ static const uint8_t ENCR2A_INT = PCINT0;
 static const uint8_t ENCR2B_INT = PCINT1;
 
 //NOTE: Current implementation expects the switches to be on the same port
-#define SW1_INT PCINT8
+#define SWM_INT PCINT8
 #define SWL_INT PCINT9
 #define SWR_INT PCINT10
+#elif PCB_VERSION == 3
+static const uint8_t ENCL1A_INT = PCINT8;
+static const uint8_t ENCL1B_INT = PCINT9;
+static const uint8_t ENCL2A_INT = PCINT17;
+static const uint8_t ENCL2B_INT = PCINT16;
+static const uint8_t ENCM1A_INT = PCINT18;
+static const uint8_t ENCM1B_INT = PCINT19;
+static const uint8_t ENCM2A_INT = PCINT6;
+static const uint8_t ENCM2B_INT = PCINT7;
+static const uint8_t ENCR1A_INT = PCINT21;
+static const uint8_t ENCR1B_INT = PCINT22;
+static const uint8_t ENCR2A_INT = PCINT0;
+static const uint8_t ENCR2B_INT = PCINT1;
+
+//NOTE: Current implementation expects the switches to be on the same port
+#define SWL_INT PCINT8
+#define SWM_INT PCINT9
+#define SWR_INT PCINT10
+#endif
+
+#if PCB_VERSION != 3
 static const uint8_t TOUCH_INT = PCINT23;
-static const uint8_t SW_INTS_MASK = (1 << SW1_INT) | (1 << SWL_INT) | (1 << SWR_INT);
-static const uint8_t SW_INTS[] = {NOT_POSSIBLE, PCINT9, PCINT8, PCINT10};
-static const uint8_t TOUCH_INTS[] = {NOT_POSSIBLE, PCINT9, PCINT23, PCINT10};
+#endif
+
+static const uint8_t SW_INTS_MASK = (1 << digitalPinToPCMSKbit(SWL)) | (1 << digitalPinToPCMSKbit(SWM)) | (1 << digitalPinToPCMSKbit(SWR));
+static const uint8_t SW_INTS[] = {(byte) NOT_POSSIBLE, digitalPinToPCMSKbit(SWL), digitalPinToPCMSKbit(SWM), digitalPinToPCMSKbit(SWR)};
+/*
+static const uint8_t TOUCH_INTS[] = {(byte) NOT_POSSIBLE, SWL_INT, PCINT23, SWR_INT};
+*/
 #endif
