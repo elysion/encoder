@@ -6,6 +6,7 @@
 #define USART_DEBUG_ENABLED 1
 #define SKIP_FEATURE_VALIDATION
 
+#include "config.h"
 #include "shared.h"
 #include "slave.h"
 
@@ -32,23 +33,9 @@ byte previousPadStates[] = {
   0b00001111
 };
 
-#define BOARD_FEATURES_L2 (NO_BOARD)
-#define BOARD_FEATURES_L1 (BOARD_FEATURE_PADS | BOARD_FEATURE_LED)
-#define BOARD_FEATURES_M (BOARD_FEATURE_PADS | BOARD_FEATURE_LED)
-#define BOARD_FEATURES_R1 (NO_BOARD)
-#define BOARD_FEATURES_R2 (NO_BOARD)
-
-const byte BOARD_FEATURES[] = {
-  BOARD_FEATURES_L2,
-  BOARD_FEATURES_L1,
-  BOARD_FEATURES_M,
-  BOARD_FEATURES_R1,
-  BOARD_FEATURES_R2,
-};
-
 #include "feature_validation.h"
 
-RotaryEncoder* encoders[5] = {
+RotaryEncoder* encoders[BOARD_COUNT] = {
   #if BOARD_FEATURES_L2 & BOARD_FEATURE_ENCODER
   new RotaryEncoder(ENCODER_PINS[BOARD_L2][0], ENCODER_PINS[BOARD_L2][1])
   #else
