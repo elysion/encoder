@@ -1,7 +1,7 @@
 #ifndef SLAVE_H
 #define SLAVE_H
 
-byte POT_CHANGE_THRESHOLD = 5;
+static const byte POT_CHANGE_THRESHOLD = 5;
 
 enum Board {
   BOARD_L2,
@@ -19,7 +19,7 @@ enum Board {
 #define BOARD_FEATURE_PADS _BV(4)
 #define BOARD_FEATURE_LED _BV(5)
 
-const byte ENCODER_PINS[5][2] = {
+static const byte ENCODER_PINS[5][2] = {
   {ENCL2A, ENCL2B},
   {ENCL1A, ENCL1B},
   {ENC1A, ENC1B},
@@ -27,28 +27,28 @@ const byte ENCODER_PINS[5][2] = {
   {ENCR2A, ENCR2B}
 };
 
-const byte BUTTON_PINS[] = {
+static const byte BUTTON_PINS[] = {
   NOT_POSSIBLE,
   SWL,
   SW1,
   SWR
 };
 
-const byte POT_PINS[] = {
+static const byte POT_PINS[] = {
   NOT_POSSIBLE,
   POTL,
   POT1,
   POTR
 };
 
-const byte TOUCH_PINS[] = {
+static const byte TOUCH_PINS[] = {
   NOT_POSSIBLE,
   ENCL2B,
   TOUCH,
   ENCR2B
 };
 
-const byte PAD_PINS[4][4] {
+static const byte PAD_PINS[][4] {
   {},
   {ENCL2A, ENCL1B, ENCL1A, SWL},
   {TOUCH, ENC1B, ENC1A, SW1},
