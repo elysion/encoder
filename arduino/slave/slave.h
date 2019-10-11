@@ -30,14 +30,14 @@ static const byte ENCODER_PINS[5][2] = {
 static const byte BUTTON_PINS[] = {
   NOT_POSSIBLE,
   SWL,
-  SW1,
+  SWM,
   SWR
 };
 
 static const byte POT_PINS[] = {
   NOT_POSSIBLE,
   POTL,
-  POT1,
+  POTM,
   POTR
 };
 

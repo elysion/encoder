@@ -198,7 +198,7 @@ void setup() {
   }
     
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_BUTTON) {
-    PCMSK1 |= 1 << SW1_INT;
+    PCMSK1 |= 1 << SWM_INT;
   }
 
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_TOUCH) {
@@ -217,7 +217,7 @@ void setup() {
   }
 
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_PADS) {
-    enablePCINT(SW1);
+    enablePCINT(SWM);
     enablePCINT(ENC1B);
     enablePCINT(ENC1A);
     enablePCINT(TOUCH); // TODO: fix  POT -> TOUCH on board
