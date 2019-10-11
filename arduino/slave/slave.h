@@ -1,8 +1,6 @@
 #ifndef SLAVE_H
 #define SLAVE_H
 
-#define NOT_POSSIBLE -1
-
 byte POT_CHANGE_THRESHOLD = 5;
 
 enum Board {
