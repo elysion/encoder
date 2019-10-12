@@ -138,87 +138,26 @@ void setup() {
   pixels.begin();
   interrupts();
 
-  // TODO: validate board feature combinations
-  address = EEPROM.read(0);
-
   Serial.begin(115200);
-  Serial.println("Boot");
-  Serial.print("Address: ");
-  Serial.println(address);
   
- if (address == 255 || address < 10) {
-    toggleBuiltinLed();
-    Serial.print("Address: ");
-    Serial.println(address);
-    Serial.println("Requesting address from master");
-    Wire.begin();
-    Wire.requestFrom(1, 1);
-    while (Wire.available()) {
-      address = Wire.read();
-      Serial.print("Received address: ");
-      Serial.println(address);
-    }
-
-    if (address == 255) {
-      Serial.println("Did not receive address from master. Resetting.");
-      reset();
-    }
-  
-    Serial.print("Starting with address: ");
-    Serial.println(address);
-    Wire.begin(address);
-
-    EEPROM.write(0, address);
-  
-    delay(900);
-    sendMessage(DEBUG_RECEIVED_ADDRESS, address, CONTROL_TYPE_DEBUG);
-  } else {
-    Wire.begin(address);
-    sendMessage(DEBUG_BOOT, 1, CONTROL_TYPE_DEBUG);
-  }
-
-  toggleBuiltinLed();
+  setupI2c();
 
   #ifndef USART_DEBUG_ENABLED
   Serial.end();
   #endif
 
-  for (byte i = 0; i < BOARD_COUNT; ++i) {
-    const byte boardFeatures = BOARD_FEATURES[i];
+  setupPinModes();
+  // TODO: Move interrupt initializations to the loop in setupPinModes();
+  setupInterrupts();
 
-    if (boardFeatures & BOARD_FEATURE_ENCODER) {
-      pinMode(ENCODER_PINS[i][0], INPUT_PULLUP);
-      pinMode(ENCODER_PINS[i][1], INPUT_PULLUP);
-    }
+  // TODO: initialize according to enabled buttons
+  switchStates = previousSwitchStates = PINC & SW_INTS_MASK; // TODO: construct mask according to enabled buttons
+  // TODO: initialize touch states
 
-    if (boardFeatures & BOARD_FEATURE_BUTTON) {
-      pinMode(BUTTON_PINS[i], INPUT_PULLUP);
-    }
+  blinkTimer.start();
+}
 
-    if (boardFeatures & BOARD_FEATURE_POT) {
-      // TODO: anything needed here?
-    }
-
-#if PCB_VERSION != 3 // TODO
-    if (boardFeatures & BOARD_FEATURE_TOUCH) {
-      pinMode(TOUCH_PINS[i], INPUT);
-    }
-#endif
-
-#if PCB_VERSION != 3 // TODO
-    if (BOARD_FEATURES[i] & BOARD_FEATURE_PADS) {
-      for (byte j = 0; j < 4; ++j) {
-        #if USART_DEBUG_ENABLED
-        Serial.print("Configuring pin as input: ");
-        Serial.println(PAD_PINS[i][j]);
-        #endif
-        pinMode(PAD_PINS[i][j], INPUT_PULLUP);
-      }
-    } 
-#endif
-  }
-
-  // TODO: Move interrupt initializations to loop above
+inline void setupInterrupts() {
   PCICR |= (1 << PCIE0) | (1 << PCIE1) | (1 << PCIE2);
   
   #ifndef USART_DEBUG_ENABLED
@@ -306,10 +245,80 @@ void setup() {
     enablePCINT(SWR);
   }
 #endif
+}
 
-  // TODO: initialize according to enabled buttons
-  switchStates = previousSwitchStates = PINC & SW_INTS_MASK; // TODO: construct mask according to enabled buttons
-  // TODO: initialize touch states
+inline void setupPinModes() {
+  for (byte i = 0; i < BOARD_COUNT; ++i) {
+    const byte boardFeatures = BOARD_FEATURES[i];
+
+    if (boardFeatures & BOARD_FEATURE_ENCODER) {
+      pinMode(ENCODER_PINS[i][0], INPUT_PULLUP);
+      pinMode(ENCODER_PINS[i][1], INPUT_PULLUP);
+    }
+
+    if (boardFeatures & BOARD_FEATURE_BUTTON) {
+      pinMode(BUTTON_PINS[i], INPUT_PULLUP);
+    }
+
+    if (boardFeatures & BOARD_FEATURE_POT) {
+      // TODO: anything needed here?
+    }
+
+#if PCB_VERSION != 3 // TODO
+    if (boardFeatures & BOARD_FEATURE_TOUCH) {
+      pinMode(TOUCH_PINS[i], INPUT);
+    }
+#endif
+
+#if PCB_VERSION != 3 // TODO
+    if (BOARD_FEATURES[i] & BOARD_FEATURE_PADS) {
+      for (byte j = 0; j < 4; ++j) {
+        #if USART_DEBUG_ENABLED
+        Serial.print("Configuring pin as input: ");
+        Serial.println(PAD_PINS[i][j]);
+        #endif
+        pinMode(PAD_PINS[i][j], INPUT_PULLUP);
+      }
+    } 
+#endif
+  }
+}
+
+inline void setupI2c() {
+  address = EEPROM.read(0);
+  Serial.println("Boot");
+  Serial.print("Address: ");
+  Serial.println(address);
+  
+ if (address == 255 || address < 10) {
+    Serial.print("Address: ");
+    Serial.println(address);
+    Serial.println("Requesting address from master");
+    Wire.begin();
+    Wire.requestFrom(1, 1);
+    while (Wire.available()) {
+      address = Wire.read();
+      Serial.print("Received address: ");
+      Serial.println(address);
+    }
+
+    if (address == 255) {
+      Serial.println("Did not receive address from master. Resetting.");
+      reset();
+    }
+  
+    Serial.print("Starting with address: ");
+    Serial.println(address);
+    Wire.begin(address);
+
+    EEPROM.write(0, address);
+  
+    delay(900);
+    sendMessage(DEBUG_RECEIVED_ADDRESS, address, CONTROL_TYPE_DEBUG);
+  } else {
+    Wire.begin(address);
+    sendMessage(DEBUG_BOOT, 1, CONTROL_TYPE_DEBUG);
+  }
 }
 
 void loop() {
