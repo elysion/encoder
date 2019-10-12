@@ -309,7 +309,7 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #define SWL (24)
 #define SWR (25)
 #define SWITCH_PORT (PINC)
-#elif PCB_VERSION == 3 // TODO: these correspond to pins in i2c_encoder_6.*
+#elif PCB_VERSION == 3
 #define ENCM1A (32)
 #define ENCM1B (1)
 #define ENCM2A (7)
