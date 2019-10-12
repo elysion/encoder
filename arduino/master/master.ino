@@ -17,6 +17,9 @@ volatile byte nextAddress;
 
 const uint8_t SS1Pin = 4;
 
+const byte I2C_RX_LED_PIN = 10;
+const byte I2C_TX_LED_PIN = 9;
+
 void setup() {
   nextAddress = EEPROM.read(0);
   nextAddress = nextAddress == 255 ? 0 : nextAddress;
@@ -30,6 +33,12 @@ void setup() {
   digitalWrite(SS1Pin, LOW);
   Serial.print("Next address: ");
   Serial.println(nextAddress);
+
+  pinMode(I2C_RX_LED_PIN, OUTPUT);
+  digitalWrite(I2C_RX_LED_PIN, HIGH);
+
+  pinMode(I2C_TX_LED_PIN, OUTPUT);
+  digitalWrite(I2C_TX_LED_PIN, HIGH);
 }
 
 void loop() {
@@ -37,7 +46,20 @@ void loop() {
   Serial.print(".");
 }
 
+inline void togglePin(byte outputPin) {
+  digitalWrite(outputPin, !digitalRead(outputPin));
+}
+
+inline void toggleRxLed() {
+  togglePin(I2C_RX_LED_PIN);
+}
+
+inline void toggleTxLed() {
+  togglePin(I2C_TX_LED_PIN);
+}
+
 void sendAddress() {
+  toggleTxLed();
   Wire.write(nextAddress);
   nextAddress++;
   EEPROM.write(0, nextAddress);
@@ -46,6 +68,7 @@ void sendAddress() {
 }
 
 void handleControlChange() {
+  toggleRxLed();
   Serial.println("Received event:");
   byte address = Wire.read();
   byte control = Wire.read();
