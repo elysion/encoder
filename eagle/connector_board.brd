@@ -214,7 +214,8 @@ http://www.axon-cable.com/publications/FFC-Flat-Cables.pdf</text>
 <text x="13.2834875" y="6.21495" size="0.8128" layer="21" rot="R45">M</text>
 <text x="5.4348875" y="9.56775" size="0.8128" layer="21" rot="R180">USART</text>
 <text x="5.4363125" y="23.27445" size="0.6096" layer="21">ICSP</text>
-<text locked="yes" x="14.5034" y="0.635" size="0.762" layer="25">µC board v1.0.0</text>
+<text x="14.5034" y="0.635" locked="yes" size="0.762" layer="25">µC board v1.1.0</text>
+<text x="22.1488" y="8.1534" locked="yes" size="0.762" layer="25" rot="R90">IF: v1.1.0</text>
 </plain>
 <libraries>
 <library name="edge">
