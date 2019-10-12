@@ -8727,6 +8727,8 @@ Source: &lt;a href="https://www.hirose.com/product/en/download_file/key_name/FH1
 <part name="U$2" library="edge" deviceset="6PIN_SOLDER_PAD" device=""/>
 <part name="U$3" library="edge" deviceset="6PIN_SOLDER_PAD" device=""/>
 <part name="U$4" library="edge" deviceset="6PIN_SOLDER_PAD" device=""/>
+<part name="X1" library="Protofusion" deviceset="POGOPIN-CONN" device="WITHVIAS-SMV"/>
+<part name="X2" library="Protofusion" deviceset="POGOPIN-CONN" device="WITHVIAS-SMV"/>
 </parts>
 <sheets>
 <sheet>
@@ -8894,6 +8896,14 @@ Pot (on the board)</text>
 <attribute name="VALUE" x="-2.54" y="-185.42" size="1.778" layer="96"/>
 <attribute name="NAME" x="-2.54" y="-164.338" size="1.778" layer="95"/>
 </instance>
+<instance part="X1" gate="J" x="152.4" y="-208.28" smashed="yes">
+<attribute name="NAME" x="152.4" y="-200.66" size="1.778" layer="95"/>
+<attribute name="VALUE" x="152.4" y="-218.44" size="1.778" layer="95" rot="MR180"/>
+</instance>
+<instance part="X2" gate="J" x="198.12" y="-208.28" smashed="yes">
+<attribute name="NAME" x="198.12" y="-200.66" size="1.778" layer="95"/>
+<attribute name="VALUE" x="198.12" y="-218.44" size="1.778" layer="95" rot="MR180"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -8941,6 +8951,8 @@ Pot (on the board)</text>
 <pinref part="X4" gate="J" pin="GND"/>
 <wire x1="185.42" y1="-205.74" x2="170.18" y2="-205.74" width="0.1524" layer="91"/>
 <pinref part="GND31" gate="1" pin="GND"/>
+<pinref part="X2" gate="J" pin="GND"/>
+<wire x1="185.42" y1="-205.74" x2="195.58" y2="-205.74" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="PWROUT" gate="G$1" pin="2"/>
@@ -8957,12 +8969,16 @@ Pot (on the board)</text>
 <pinref part="X6" gate="J" pin="VCC"/>
 <wire x1="137.16" y1="-203.2" x2="127" y2="-203.2" width="0.1524" layer="91"/>
 <label x="127" y="-203.2" size="1.778" layer="95"/>
+<pinref part="X1" gate="J" pin="VCC"/>
+<wire x1="137.16" y1="-203.2" x2="149.86" y2="-203.2" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="X6" gate="J" pin="GND"/>
 <wire x1="137.16" y1="-205.74" x2="119.38" y2="-205.74" width="0.1524" layer="91"/>
 <label x="127" y="-205.74" size="1.778" layer="95"/>
 <pinref part="GND3" gate="1" pin="GND"/>
+<pinref part="X1" gate="J" pin="GND"/>
+<wire x1="149.86" y1="-205.74" x2="137.16" y2="-205.74" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -9001,6 +9017,8 @@ Pot (on the board)</text>
 <pinref part="X4" gate="J" pin="VCC"/>
 <wire x1="185.42" y1="-203.2" x2="180.34" y2="-203.2" width="0.1524" layer="91"/>
 <pinref part="SUPPLY8" gate="G$1" pin="VCC"/>
+<pinref part="X2" gate="J" pin="VCC"/>
+<wire x1="195.58" y1="-203.2" x2="185.42" y2="-203.2" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="PWROUT" gate="G$1" pin="1"/>
@@ -9015,6 +9033,8 @@ Pot (on the board)</text>
 <pinref part="X6" gate="J" pin="SCK"/>
 <wire x1="137.16" y1="-208.28" x2="127" y2="-208.28" width="0.1524" layer="91"/>
 <label x="127" y="-208.28" size="1.778" layer="95"/>
+<pinref part="X1" gate="J" pin="SCK"/>
+<wire x1="137.16" y1="-208.28" x2="149.86" y2="-208.28" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R40" gate="G$1" pin="1"/>
@@ -9071,6 +9091,8 @@ Pot (on the board)</text>
 <pinref part="X4" gate="J" pin="MISO"/>
 <wire x1="185.42" y1="-210.82" x2="175.26" y2="-210.82" width="0.1524" layer="91"/>
 <label x="175.26" y="-210.82" size="1.778" layer="95"/>
+<pinref part="X2" gate="J" pin="MISO"/>
+<wire x1="185.42" y1="-210.82" x2="195.58" y2="-210.82" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="J1" gate="G$1" pin="5"/>
@@ -9093,6 +9115,8 @@ Pot (on the board)</text>
 <pinref part="X4" gate="J" pin="MOSI"/>
 <wire x1="185.42" y1="-213.36" x2="175.26" y2="-213.36" width="0.1524" layer="91"/>
 <label x="175.26" y="-213.36" size="1.778" layer="95"/>
+<pinref part="X2" gate="J" pin="MOSI"/>
+<wire x1="195.58" y1="-213.36" x2="185.42" y2="-213.36" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="J1" gate="G$1" pin="4"/>
@@ -9115,6 +9139,8 @@ Pot (on the board)</text>
 <pinref part="X4" gate="J" pin="SCK"/>
 <wire x1="185.42" y1="-208.28" x2="175.26" y2="-208.28" width="0.1524" layer="91"/>
 <label x="175.26" y="-208.28" size="1.778" layer="95"/>
+<pinref part="X2" gate="J" pin="SCK"/>
+<wire x1="195.58" y1="-208.28" x2="185.42" y2="-208.28" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="J1" gate="G$1" pin="6"/>
@@ -9353,6 +9379,8 @@ Pot (on the board)</text>
 <pinref part="X4" gate="J" pin="\RST"/>
 <wire x1="185.42" y1="-215.9" x2="175.26" y2="-215.9" width="0.1524" layer="91"/>
 <label x="175.26" y="-215.9" size="1.778" layer="95"/>
+<pinref part="X2" gate="J" pin="\RST"/>
+<wire x1="185.42" y1="-215.9" x2="195.58" y2="-215.9" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="DTR" class="0">
@@ -9365,6 +9393,8 @@ Pot (on the board)</text>
 <pinref part="X6" gate="J" pin="\RST"/>
 <wire x1="137.16" y1="-215.9" x2="127" y2="-215.9" width="0.1524" layer="91"/>
 <label x="127" y="-215.9" size="1.778" layer="95"/>
+<pinref part="X1" gate="J" pin="\RST"/>
+<wire x1="149.86" y1="-215.9" x2="137.16" y2="-215.9" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -9384,6 +9414,8 @@ Pot (on the board)</text>
 <pinref part="X6" gate="J" pin="MISO"/>
 <wire x1="137.16" y1="-210.82" x2="127" y2="-210.82" width="0.1524" layer="91"/>
 <label x="127" y="-210.82" size="1.778" layer="95"/>
+<pinref part="X1" gate="J" pin="MISO"/>
+<wire x1="149.86" y1="-210.82" x2="137.16" y2="-210.82" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="TXD" class="0">
@@ -9396,6 +9428,8 @@ Pot (on the board)</text>
 <pinref part="X6" gate="J" pin="MOSI"/>
 <wire x1="137.16" y1="-213.36" x2="127" y2="-213.36" width="0.1524" layer="91"/>
 <label x="127" y="-213.36" size="1.778" layer="95"/>
+<pinref part="X1" gate="J" pin="MOSI"/>
+<wire x1="137.16" y1="-213.36" x2="149.86" y2="-213.36" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="LEDM" class="0">
