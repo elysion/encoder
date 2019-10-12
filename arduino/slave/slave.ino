@@ -223,67 +223,68 @@ void setup() {
   
   #ifndef USART_DEBUG_ENABLED
   if (BOARD_FEATURES[BOARD_L2] & BOARD_FEATURE_ENCODER) {
-    PCMSK2 |= (1 << ENCL2A_INT) | (1 << ENCL2B_INT);
+    enablePCINT(ENCL2A);
+    enablePCINT(ENCL2B);
   }
   #endif
 
   if (BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_ENCODER) {
-    PCMSK2 |= (1 << ENCL1A_INT) | (1 << ENCL1B_INT);
+    enablePCINT(ENCL1A);
+    enablePCINT(ENCL1B);
   }
 
 #if PCB_VERSION == 3
   if (BOARD_FEATURES[BOARD_M1] & BOARD_FEATURE_ENCODER) {
-    PCMSK2 |= (1 << ENCM1B_INT);
-    PCMSK2 |= (1 << ENCM1A_INT);
+    enablePCINT(ENCM1B);
+    enablePCINT(ENCM1A);
   }
   if (BOARD_FEATURES[BOARD_M2] & BOARD_FEATURE_ENCODER) {
-    PCMSK2 |= (1 << ENCM2B_INT);
-    PCMSK2 |= (1 << ENCM2A_INT);
+    enablePCINT(ENCM2B);
+    enablePCINT(ENCM2A);
   }
 #else
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_ENCODER) {
-    PCMSK1 |= (1 << ENC1B_INT);
-    PCMSK2 |= (1 << ENC1A_INT);
+    enablePCINT(ENC1B);
+    enablePCINT(ENC1A);
   }
 #endif
+
+  if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_ENCODER) {
+    enablePCINT(ENCR1A);
+    enablePCINT(ENCR1B);
+  }
   
-  if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_ENCODER) {
-    PCMSK0 |= (1 << ENCL1A_INT) | (1 << ENCL1B_INT);
+  if (BOARD_FEATURES[BOARD_R2] & BOARD_FEATURE_ENCODER) {
+    enablePCINT(ENCR2A);
+    enablePCINT(ENCR2B);
   }
-
-  if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_ENCODER) {
-    PCMSK0 |= (1 << ENCR2A_INT) | (1 << ENCR2B_INT);
+  
+#if PCB_VERSION != 3 // v3 does not have a PCINT on SWL :(
+  if (BOARD_FEATURES[BOARD_L1] & (BOARD_FEATURE_BUTTON | BOARD_FEATURE_TOUCH)) {
+    enablePCINT(SWL);
   }
-
-  if (BOARD_FEATURES[BOARD_L1] & (BOARD_FEATURE_BUTTON
-#if PCB_VERSION != 3 // TODO
-  | BOARD_FEATURE_TOUCH
 #endif
-  )) {
-    PCMSK1 |= 1 << SWL_INT;
-  }
 
 #if PCB_VERSION == 3
   if (BOARD_FEATURES[BOARD_M1] & BOARD_FEATURE_BUTTON) {
-    PCMSK1 |= 1 << SWM_INT; // TODO: check this
+    enablePCINT(SWM);
   }
 #else
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_BUTTON) {
-    PCMSK1 |= 1 << SWM_INT;
+    enablePCINT(SWM);
   }
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_TOUCH) {
-    PCMSK1 |= 1 << TOUCH_INT;
+    enablePCINT(TOUCH);
   }
 #endif
 
-  if (BOARD_FEATURES[BOARD_R1] & (BOARD_FEATURE_BUTTON 
+#if PCB_VERSION != 3 // v3 does not have a PCINT on SWR :(
+  if (BOARD_FEATURES[BOARD_R1] & (BOARD_FEATURE_BUTTON | BOARD_FEATURE_TOUCH)) {
+    enablePCINT(SWR);
+  }
+#endif
+
 #if PCB_VERSION != 3 // TODO
-  | BOARD_FEATURE_TOUCH
-#endif
-  )) {
-    PCMSK1 |= 1 << SWR_INT;
-  }
-
   if (BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_PADS) {
     enablePCINT(SWL);
     enablePCINT(ENCL1A);
@@ -291,19 +292,20 @@ void setup() {
     enablePCINT(ENCL2A);
   }
 
-#if PCB_VERSION != 3 // TODO
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_PADS) {
     enablePCINT(SWM);
     enablePCINT(ENC1B);
     enablePCINT(ENC1A);
     enablePCINT(TOUCH); // TODO: fix  POT -> TOUCH on board
   }
-#endif
   
   if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_PADS) {
-    PCMSK0 |= (1 << ENCR1A_INT) | (1 << ENCR1B_INT) | (1 << ENCR2A_INT);
-    PCMSK1 |= 1 << SWR_INT;
+    enablePCINT(ENCR1A);
+    enablePCINT(ENCR1B);
+    enablePCINT(ENCR2A);
+    enablePCINT(SWR);
   }
+#endif
 
   // TODO: initialize according to enabled buttons
   switchStates = previousSwitchStates = PINC & SW_INTS_MASK; // TODO: construct mask according to enabled buttons
