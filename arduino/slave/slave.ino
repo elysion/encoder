@@ -116,7 +116,11 @@ byte states[] = {
 
 byte interrupter = 255;
 #define LED_BUILTIN_AVAILABLE (BOARD_FEATURES_R2 == NO_BOARD) // TODO: only disable when R2 uses encoder? (How does the pull-up on the pin affect this need?) 
-MillisTimer blinkTimer = MillisTimer(1000, toggleBuiltinLed);
+
+void blinkBuiltinLed(MillisTimer &timer __attribute__((unused))) {
+  toggleBuiltinLed();
+}
+MillisTimer blinkTimer = MillisTimer(1000, blinkBuiltinLed);
 
 void(* reset) (void) = 0;
 
