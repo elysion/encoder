@@ -467,7 +467,7 @@ void loop() {
       position = (*encoders[i]).getPosition(); // TODO: use getDirection or create separate relative encoder feature
       positionChanged = position != positions[i];
       
-      #if USART_DEBUG_ENABLED
+#if USART_DEBUG_ENABLED
       byte stateA = digitalRead(ENCODER_PINS[i][0]);
       byte stateB = digitalRead(ENCODER_PINS[i][1]);
   
@@ -483,7 +483,7 @@ void loop() {
         states[2*i] = stateA;
         states[2*i+1] = stateB;
       }
-      #endif
+#endif
     } else if (BOARD_FEATURES[i] & BOARD_FEATURE_POT) {
       positionChanged = position != positions[i] && (position == 0 || position == 127 || POT_CHANGE_THRESHOLD < abs(positions[i] - position));
       // Resolution restricted to 7-bits for MIDI compatibility
