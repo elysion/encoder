@@ -346,6 +346,7 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #endif
 
 #if PCB_VERSION != 3
+// TODO: On v2 SWM is connected to TOUCH -> Not an analog input
 #define POTM SWM
 #define POTL SWL
 #define POTR SWR
