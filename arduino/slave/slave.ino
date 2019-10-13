@@ -574,6 +574,7 @@ inline void updateTouchStates() {
 }
 #endif
 
+// !!NOTE!!: Do not call sendMessage in ISRs
 ISR(PCINT0_vect) {
 #if USART_DEBUG_ENABLED
   interrupter = 0;
@@ -602,6 +603,7 @@ ISR(PCINT0_vect) {
 #endif
 }
 
+// !!NOTE!!: Do not call sendMessage in ISRs
 ISR(PCINT1_vect) {
 #if USART_DEBUG_ENABLED
   interrupter = 1;
@@ -629,6 +631,7 @@ ISR(PCINT1_vect) {
 #endif
 }
 
+// !!NOTE!!: Do not call sendMessage in ISRs
 ISR(PCINT2_vect) {
 #if USART_DEBUG_ENABLED
   interrupter = 2;
