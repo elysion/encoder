@@ -42,12 +42,23 @@ static const byte ENCODER_PINS[BOARD_COUNT][2] = {
   {ENCR2A, ENCR2B}
 };
 
+#if PCB_VERSION == 3
+static const byte BUTTON_PINS[] = {
+  SWL,
+  SWL,
+  SWM,
+  SWM,
+  SWR,
+  SWR
+};
+#else
 static const byte BUTTON_PINS[] = {
   NOT_POSSIBLE,
   SWL,
   SWM,
   SWR
 };
+#endif
 
 static const byte POT_PINS[] = {
   NOT_POSSIBLE,
@@ -81,5 +92,9 @@ static const byte PAD_PINS[][4] {
 #define HAS_TOUCH(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_TOUCH))
 
 #define ANY_BOARD_HAS_FEATURE(FEATURE) (HAS_FEATURE(L2, FEATURE) | HAS_FEATURE(L1, FEATURE) | HAS_FEATURE(M, FEATURE) | HAS_FEATURE(R1, FEATURE) | HAS_FEATURE(R2, FEATURE))
+struct ButtonPairStates {
+  bool firstButtonState;
+  bool secondButtonState;
+};
 
 #endif

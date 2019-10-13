@@ -79,6 +79,9 @@ static const uint8_t A7 = PIN_A7;
 
 #define digitalPinToInterrupt(p)  ((p) == 32 ? 0 : ((p) == 1 ? 1 : NOT_AN_INTERRUPT))
 
+extern const uint8_t PROGMEM analog_pin_to_channel_PGM[];
+#define analogPinToChannel(p)  (p == 19 ? 6 : p == 22 ? 7 : p >= 23 & p <= 28 ? p - 23 : -1 )
+
 #ifdef ARDUINO_MAIN
 
 // On the Arduino board, digital pins are also used
@@ -241,7 +244,7 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 	NOT_ON_TIMER, // PD2
 };
 
-#endif
+#endif /* ARDUINO_MAIN */
 
 // These serial port names are intended to allow libraries and architecture-neutral
 // sketches to automatically default to the correct port name for a particular type
@@ -322,9 +325,9 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #define ENCR1B (10)
 #define ENCR2A (12)
 #define ENCR2B (13)
-#define SWM (23)
-#define SWL (24)
-#define SWR (25)
+#define SWM (26)
+#define SWL (22)
+#define SWR (19)
 #endif
 
 #define TOUCH (11)
@@ -400,17 +403,26 @@ static const uint8_t ENCR2A_INT = PCINT0;
 static const uint8_t ENCR2B_INT = PCINT1;
 
 //NOTE: Current implementation expects the switches to be on the same port
-#define SWL_INT PCINT8
-#define SWM_INT PCINT9
-#define SWR_INT PCINT10
+#define SWL_INT NOT_POSSIBLE
+#define SWM_INT PCINT11
+#define SWR_INT NOT_POSSIBLE
 #endif
 
 #if PCB_VERSION != 3
 static const uint8_t TOUCH_INT = PCINT23;
 #endif
 
+#if PCB_VERSION == 3 // TODO: add interrupt mask validation (i.e. != -1)
+static const uint8_t SW_INTS_MASK = (1 << digitalPinToPCMSKbit(SWM));
+#else
 static const uint8_t SW_INTS_MASK = (1 << digitalPinToPCMSKbit(SWL)) | (1 << digitalPinToPCMSKbit(SWM)) | (1 << digitalPinToPCMSKbit(SWR));
+#endif
+
+#if PCB_VERSION == 3
+static const uint8_t SW_INTS[] = {(byte) NOT_POSSIBLE, (byte) NOT_POSSIBLE, digitalPinToPCMSKbit(SWM), (byte) NOT_POSSIBLE};
+#else
 static const uint8_t SW_INTS[] = {(byte) NOT_POSSIBLE, digitalPinToPCMSKbit(SWL), digitalPinToPCMSKbit(SWM), digitalPinToPCMSKbit(SWR)};
+#endif
 /*
 static const uint8_t TOUCH_INTS[] = {(byte) NOT_POSSIBLE, SWL_INT, PCINT23, SWR_INT};
 */

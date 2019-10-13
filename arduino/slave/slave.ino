@@ -153,10 +153,52 @@ void setup() {
   setupInterrupts();
 
   // TODO: initialize according to enabled buttons
-  switchStates = previousSwitchStates = PINC & SW_INTS_MASK; // TODO: construct mask according to enabled buttons
+  switchStates = previousSwitchStates = getButtonStates(); // TODO: construct mask according to enabled buttons
   // TODO: initialize touch states
 
   blinkTimer.start();
+}
+
+const int FIRST_BUTTON_VOLTAGE = 670;
+const int SECOND_BUTTON_VOLTAGE = 1023;
+const int BOTH_BUTTONS_VOLTAGE = (FIRST_BUTTON_VOLTAGE + SECOND_BUTTON_VOLTAGE) / 2;
+const int BUTTON_VOLTAGE_RANGE = 50;
+
+bool isInRange(int value, int target, int range) {
+  return value > target - range && value < target + range;
+}
+
+ButtonPairStates voltageToButtonStates(int voltage) {
+  ButtonPairStates buttonStates;
+  bool bothButtonsPressed = isInRange(voltage, BOTH_BUTTONS_VOLTAGE, BUTTON_VOLTAGE_RANGE);
+  buttonStates.firstButtonState = bothButtonsPressed || isInRange(voltage, FIRST_BUTTON_VOLTAGE, BUTTON_VOLTAGE_RANGE);
+  buttonStates.secondButtonState = bothButtonsPressed || isInRange(voltage, SECOND_BUTTON_VOLTAGE, BUTTON_VOLTAGE_RANGE);
+  return buttonStates;
+}
+
+byte getButtonStates() {
+#if PCB_VERSION == 3
+  byte buttonStates = 0;
+#if HAS_FEATURE(L1, BOARD_FEATURE_BUTTON) || HAS_FEATURE(L2, BOARD_FEATURE_BUTTON)
+  int swlVoltage = analogRead(SWL);
+  ButtonPairStates lButtonStates = voltageToButtonStates(swlVoltage);
+  buttonStates |= ((lButtonStates.firstButtonState ? 1 : 0) | ((lButtonStates.secondButtonState ? 1 : 0) << 1));
+#endif
+#if HAS_FEATURE(M1, BOARD_FEATURE_BUTTON) || HAS_FEATURE(M2, BOARD_FEATURE_BUTTON)
+  int swmVoltage = analogRead(SWM);
+  ButtonPairStates mButtonStates = voltageToButtonStates(swmVoltage);
+  buttonStates |= (((mButtonStates.firstButtonState ? 1 : 0) << 2) | ((mButtonStates.secondButtonState ? 1 : 0) << 3));
+#endif
+#if HAS_FEATURE(R1, BOARD_FEATURE_BUTTON) || HAS_FEATURE(R2, BOARD_FEATURE_BUTTON)
+  int swrVoltage = analogRead(SWR);
+  ButtonPairStates rButtonStates = voltageToButtonStates(swrVoltage);
+  buttonStates |= (((rButtonStates.firstButtonState ? 1 : 0) << 4) | ((rButtonStates.secondButtonState ? 1 : 0) << 5));
+#endif
+#else
+  return PINC & SW_INTS_MASK;
+#endif
+
+  return buttonStates;
 }
 
 inline void setupInterrupts() {
@@ -207,7 +249,7 @@ inline void setupInterrupts() {
 #endif
 
 #if PCB_VERSION == 3
-  if (BOARD_FEATURES[BOARD_M1] & BOARD_FEATURE_BUTTON) {
+  if (BOARD_FEATURES[BOARD_M1] & BOARD_FEATURE_BUTTON || BOARD_FEATURES[BOARD_M2] & BOARD_FEATURE_BUTTON) {
     enablePCINT(SWM);
   }
 #else
@@ -259,7 +301,11 @@ inline void setupPinModes() {
     }
 
     if (boardFeatures & BOARD_FEATURE_BUTTON) {
+#if PCB_VERSION == 3
+      pinMode(BUTTON_PINS[i], INPUT);
+#else
       pinMode(BUTTON_PINS[i], INPUT_PULLUP);
+#endif      
     }
 
     if (boardFeatures & BOARD_FEATURE_POT) {
@@ -340,6 +386,7 @@ void loop() {
     Serial.println(changed);
     #endif
     if (changed) {
+      // TODO: Do not use SW_INTS for mask on PCB version 3
       for (byte i = 0; i < 3; ++i) {
         byte switchMask = (1 << SW_INTS[i]);
         if (changed & switchMask) {
@@ -501,10 +548,14 @@ inline void updatePadStates() {
 #endif
 
 inline void updateSwitchStates() {
+#if PCB_VERSION == 3
+  switchStates = getButtonStates();
+#else
   switchStates = PINC &
     (!!(BOARD_FEATURES[1] & BOARD_FEATURE_BUTTON) << SW_INTS[1]) |
     (!!(BOARD_FEATURES[2] & BOARD_FEATURE_BUTTON) << SW_INTS[2]) |
     (!!(BOARD_FEATURES[3] & BOARD_FEATURE_BUTTON) << SW_INTS[3]);
+#endif
 }
 
 #if PCB_VERSION != 3 // TODO
