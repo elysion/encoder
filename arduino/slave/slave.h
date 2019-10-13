@@ -60,12 +60,14 @@ static const byte BUTTON_PINS[] = {
 };
 #endif
 
+#if PCB_VERSION != 3
 static const byte POT_PINS[] = {
   NOT_POSSIBLE,
   POTL,
   POTM,
   POTR
 };
+#endif
 
 #if PCB_VERSION != 3
 static const byte TOUCH_PINS[] = {

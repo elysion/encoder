@@ -345,9 +345,11 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #define LED2 (10)
 #endif
 
+#if PCB_VERSION != 3
 #define POTM SWM
 #define POTL SWL
 #define POTR SWR
+#endif
 
 #define NOT_POSSIBLE (-1)
 
