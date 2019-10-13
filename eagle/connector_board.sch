@@ -8682,7 +8682,7 @@ Source: &lt;a href="https://www.hirose.com/product/en/download_file/key_name/FH1
 </class>
 </classes>
 <parts>
-<part name="PWRIN" library="edge" deviceset="2PIN_1.27MM" device=""/>
+<part name="PI" library="edge" deviceset="2PIN_1.27MM" device=""/>
 <part name="GND6" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="C23" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100n"/>
 <part name="GND9" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
@@ -8711,7 +8711,7 @@ Source: &lt;a href="https://www.hirose.com/product/en/download_file/key_name/FH1
 <part name="R40" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
 <part name="SH1" library="shorts" deviceset="SHORT" device=""/>
 <part name="SH2" library="shorts" deviceset="SHORT" device=""/>
-<part name="PWROUT" library="edge" deviceset="2PIN_1.27MM" device=""/>
+<part name="PO" library="edge" deviceset="2PIN_1.27MM" device=""/>
 <part name="GND1" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
 <part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100n"/>
@@ -8749,7 +8749,7 @@ Pot (on the board)</text>
 <text x="119.38" y="-205.74" size="1.778" layer="91">CTS</text>
 </plain>
 <instances>
-<instance part="PWRIN" gate="G$1" x="154.94" y="-154.94" smashed="yes" rot="R180">
+<instance part="PI" gate="G$1" x="154.94" y="-154.94" smashed="yes" rot="R180">
 <attribute name="VALUE" x="157.48" y="-149.86" size="1.778" layer="96" rot="R180"/>
 <attribute name="NAME" x="157.48" y="-160.782" size="1.778" layer="95" rot="R180"/>
 </instance>
@@ -8837,7 +8837,7 @@ Pot (on the board)</text>
 <instance part="SH2" gate="G$1" x="139.7" y="-132.08" smashed="yes">
 <attribute name="NAME" x="137.4775" y="-130.81" size="1.778" layer="95"/>
 </instance>
-<instance part="PWROUT" gate="G$1" x="177.8" y="-154.94" smashed="yes" rot="R180">
+<instance part="PO" gate="G$1" x="177.8" y="-154.94" smashed="yes" rot="R180">
 <attribute name="VALUE" x="180.34" y="-149.86" size="1.778" layer="96" rot="R180"/>
 <attribute name="NAME" x="180.34" y="-160.782" size="1.778" layer="95" rot="R180"/>
 </instance>
@@ -8910,7 +8910,7 @@ Pot (on the board)</text>
 <nets>
 <net name="GND" class="0">
 <segment>
-<pinref part="PWRIN" gate="G$1" pin="2"/>
+<pinref part="PI" gate="G$1" pin="2"/>
 <pinref part="GND6" gate="1" pin="GND"/>
 <wire x1="147.32" y1="-157.48" x2="144.78" y2="-157.48" width="0.1524" layer="91"/>
 <wire x1="144.78" y1="-157.48" x2="144.78" y2="-162.56" width="0.1524" layer="91"/>
@@ -8955,7 +8955,7 @@ Pot (on the board)</text>
 <wire x1="185.42" y1="-205.74" x2="195.58" y2="-205.74" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="PWROUT" gate="G$1" pin="2"/>
+<pinref part="PO" gate="G$1" pin="2"/>
 <pinref part="GND1" gate="1" pin="GND"/>
 <wire x1="170.18" y1="-157.48" x2="167.64" y2="-157.48" width="0.1524" layer="91"/>
 <wire x1="167.64" y1="-157.48" x2="167.64" y2="-162.56" width="0.1524" layer="91"/>
@@ -8988,7 +8988,7 @@ Pot (on the board)</text>
 <wire x1="43.18" y1="-83.82" x2="43.18" y2="-86.36" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="PWRIN" gate="G$1" pin="1"/>
+<pinref part="PI" gate="G$1" pin="1"/>
 <pinref part="SUPPLY1" gate="G$1" pin="VCC"/>
 </segment>
 <segment>
@@ -9021,7 +9021,7 @@ Pot (on the board)</text>
 <wire x1="195.58" y1="-203.2" x2="185.42" y2="-203.2" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="PWROUT" gate="G$1" pin="1"/>
+<pinref part="PO" gate="G$1" pin="1"/>
 <pinref part="SUPPLY3" gate="G$1" pin="VCC"/>
 </segment>
 <segment>
@@ -9490,14 +9490,14 @@ Pot (on the board)</text>
 <label x="-43.18" y="-106.68" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="IC1" gate="G$1" pin="PD2(INT0)"/>
-<wire x1="121.92" y1="-134.62" x2="129.54" y2="-134.62" width="0.1524" layer="91"/>
-<label x="124.46" y="-134.62" size="1.778" layer="95"/>
-</segment>
-<segment>
 <wire x1="20.32" y1="-99.06" x2="7.62" y2="-99.06" width="0.1524" layer="91"/>
 <label x="7.62" y="-99.06" size="1.778" layer="95"/>
 <pinref part="U$2" gate="G$1" pin="6"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="G$1" pin="PD4(XCK/T0)"/>
+<wire x1="121.92" y1="-139.7" x2="129.54" y2="-139.7" width="0.1524" layer="91"/>
+<label x="124.46" y="-139.7" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="ENCR1B" class="0">
@@ -9536,11 +9536,6 @@ Pot (on the board)</text>
 </net>
 <net name="LEDR" class="0">
 <segment>
-<pinref part="IC1" gate="G$1" pin="PD4(XCK/T0)"/>
-<wire x1="121.92" y1="-139.7" x2="129.54" y2="-139.7" width="0.1524" layer="91"/>
-<label x="124.46" y="-139.7" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="J4" gate="G$1" pin="3"/>
 <wire x1="-35.56" y1="-109.22" x2="-43.18" y2="-109.22" width="0.1524" layer="91"/>
 <label x="-43.18" y="-109.22" size="1.778" layer="95"/>
@@ -9549,6 +9544,11 @@ Pot (on the board)</text>
 <wire x1="20.32" y1="-104.14" x2="7.62" y2="-104.14" width="0.1524" layer="91"/>
 <label x="7.62" y="-104.14" size="1.778" layer="95"/>
 <pinref part="U$2" gate="G$1" pin="4"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="G$1" pin="PD2(INT0)"/>
+<wire x1="121.92" y1="-134.62" x2="129.54" y2="-134.62" width="0.1524" layer="91"/>
+<label x="124.46" y="-134.62" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
