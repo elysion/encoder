@@ -5987,6 +5987,9 @@ Source: &lt;a href="https://www.hirose.com/product/en/download_file/key_name/FH1
 <part name="R4" library="rcl" deviceset="R-EU_" device="R0603" value="100k">
 <attribute name="SPICEPREFIX" value="R"/>
 </part>
+<part name="POWER1" library="edge" deviceset="2PIN_1.27MM" device=""/>
+<part name="GND1" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
+<part name="SUPPLY2" library="SparkFun-Aesthetics" deviceset="VCC" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -6057,6 +6060,16 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <attribute name="VALUE" x="-50.8" y="-93.98" size="1.778" layer="96" rot="R180"/>
 <attribute name="NAME" x="-50.8" y="-115.062" size="1.778" layer="95" rot="R180"/>
 </instance>
+<instance part="POWER1" gate="G$1" x="154.94" y="-172.72" smashed="yes" rot="R180">
+<attribute name="VALUE" x="157.48" y="-167.64" size="1.778" layer="96" rot="R180"/>
+<attribute name="NAME" x="157.48" y="-178.562" size="1.778" layer="95" rot="R180"/>
+</instance>
+<instance part="GND1" gate="1" x="144.78" y="-182.88" smashed="yes">
+<attribute name="VALUE" x="142.24" y="-185.42" size="1.778" layer="96"/>
+</instance>
+<instance part="SUPPLY2" gate="G$1" x="147.32" y="-172.72" smashed="yes">
+<attribute name="VALUE" x="146.304" y="-169.164" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -6103,6 +6116,12 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <wire x1="99.06" y1="-203.2" x2="109.22" y2="-203.2" width="0.1524" layer="91"/>
 <pinref part="GND11" gate="1" pin="GND"/>
 </segment>
+<segment>
+<pinref part="POWER1" gate="G$1" pin="2"/>
+<pinref part="GND1" gate="1" pin="GND"/>
+<wire x1="147.32" y1="-175.26" x2="144.78" y2="-175.26" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="-175.26" x2="144.78" y2="-180.34" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="VCC" class="0">
 <segment>
@@ -6138,6 +6157,10 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <pinref part="J11" gate="G$1" pin="1"/>
 <wire x1="-35.56" y1="-160.02" x2="-40.64" y2="-160.02" width="0.1524" layer="91"/>
 <label x="-40.64" y="-160.02" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="POWER1" gate="G$1" pin="1"/>
+<pinref part="SUPPLY2" gate="G$1" pin="VCC"/>
 </segment>
 </net>
 <net name="LED_OUT" class="0">
