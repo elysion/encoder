@@ -5897,7 +5897,7 @@ Source: &lt;a href="https://www.hirose.com/product/en/download_file/key_name/FH1
 <part name="J11" library="i2c_encoder" deviceset="M02" device="1X02_NO_SILK"/>
 <part name="J10" library="i2c_encoder" deviceset="M04" device="NO_SILK_ALL_ROUND"/>
 <part name="J14" library="i2c_encoder" deviceset="M02" device="1X02_NO_SILK"/>
-<part name="R24" library="rcl" deviceset="R-EU_" device="R0603" value="0">
+<part name="R24" library="rcl" deviceset="R-EU_" device="R0603" value="10k">
 <attribute name="SPICEPREFIX" value="R"/>
 </part>
 <part name="R25" library="i2c_encoder" deviceset="EVU" device="F2K" package3d_urn="urn:adsk.eagle:package:22732/1"/>
@@ -5923,15 +5923,18 @@ Source: &lt;a href="https://www.hirose.com/product/en/download_file/key_name/FH1
 <part name="R2" library="rcl" deviceset="R-EU_" device="R0603" value="10k">
 <attribute name="SPICEPREFIX" value="R"/>
 </part>
-<part name="R3" library="rcl" deviceset="R-EU_" device="R0603" value="10k">
-<attribute name="SPICEPREFIX" value="R"/>
-</part>
-<part name="R4" library="rcl" deviceset="R-EU_" device="R0603" value="10k">
-<attribute name="SPICEPREFIX" value="R"/>
-</part>
 <part name="J1" library="FH12-6S-0.5SH(55)" deviceset="FH12-6S-0.5SH(55)" device=""/>
 <part name="J2" library="FH12-6S-0.5SH(55)" deviceset="FH12-6S-0.5SH(55)" device=""/>
 <part name="R5" library="rcl" deviceset="R-EU_" device="R0603" value="0">
+<attribute name="SPICEPREFIX" value="R"/>
+</part>
+<part name="R3" library="rcl" deviceset="R-EU_" device="R0603" value="10k">
+<attribute name="SPICEPREFIX" value="R"/>
+</part>
+<part name="R4" library="rcl" deviceset="R-EU_" device="R0603" value="100k">
+<attribute name="SPICEPREFIX" value="R"/>
+</part>
+<part name="R6" library="rcl" deviceset="R-EU_" device="R0603" value="0">
 <attribute name="SPICEPREFIX" value="R"/>
 </part>
 </parts>
@@ -5980,10 +5983,6 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <instance part="ENC1" gate="G$1" x="96.52" y="-203.2" smashed="yes" rot="R90">
 <attribute name="PART" x="96.52" y="-207.01" size="1.27" layer="95" rot="R180"/>
 <attribute name="VALUE" x="96.52" y="-196.85" size="1.27" layer="96" rot="R180"/>
-</instance>
-<instance part="ENC1" gate="G$2" x="33.02" y="-198.12" smashed="yes">
-<attribute name="PART" x="27.94" y="-193.04" size="1.27" layer="95"/>
-<attribute name="VALUE" x="27.94" y="-200.66" size="1.27" layer="96"/>
 </instance>
 <instance part="GND11" gate="1" x="109.22" y="-205.74" smashed="yes">
 <attribute name="VALUE" x="106.68" y="-208.28" size="1.778" layer="96"/>
@@ -6179,31 +6178,14 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <label x="40.64" y="-129.54" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="SW1" class="0">
-<segment>
-<pinref part="J2" gate="G$1" pin="6"/>
-<wire x1="71.12" y1="-157.48" x2="81.28" y2="-157.48" width="0.1524" layer="91"/>
-<label x="76.2" y="-157.48" size="1.778" layer="95"/>
-</segment>
+<net name="SW_IN" class="0">
 <segment>
 <pinref part="J1" gate="G$1" pin="1"/>
 <wire x1="50.8" y1="-127" x2="40.64" y2="-127" width="0.1524" layer="91"/>
 <label x="40.64" y="-127" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="ENC_SW" class="0">
-<segment>
-<pinref part="ENC1" gate="G$2" pin="2"/>
-<wire x1="27.94" y1="-198.12" x2="17.78" y2="-198.12" width="0.1524" layer="91"/>
-<label x="17.78" y="-198.12" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="ENC_SW_PU" class="0">
-<segment>
-<pinref part="ENC1" gate="G$2" pin="1"/>
-<wire x1="38.1" y1="-198.12" x2="43.18" y2="-198.12" width="0.1524" layer="91"/>
-<label x="40.64" y="-198.12" size="1.778" layer="95"/>
-</segment>
 <segment>
 <pinref part="R25" gate="G$1" pin="E"/>
 <wire x1="99.06" y1="-231.14" x2="86.36" y2="-231.14" width="0.1524" layer="91"/>
@@ -6220,6 +6202,13 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <segment>
 <pinref part="J2" gate="G$1" pin="5"/>
 <wire x1="50.8" y1="-157.48" x2="40.64" y2="-157.48" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="SW_OUT" class="0">
+<segment>
+<pinref part="J2" gate="G$1" pin="6"/>
+<wire x1="71.12" y1="-157.48" x2="81.28" y2="-157.48" width="0.1524" layer="91"/>
+<label x="76.2" y="-157.48" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
@@ -6323,16 +6312,16 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <text x="40.64" y="20.32" size="1.778" layer="91">LED passthrough</text>
 <text x="99.06" y="78.74" size="1.778" layer="91">Jumper for button panel</text>
 <text x="99.06" y="45.72" size="1.778" layer="91">Jumper for POT touch</text>
-<text x="157.48" y="78.74" size="1.778" layer="91">POT jumpers</text>
+<text x="157.48" y="78.74" size="1.778" layer="91">Feature jumpers</text>
 </plain>
 <instances>
 <instance part="R21" gate="G$1" x="43.18" y="17.78" smashed="yes" rot="R180">
 <attribute name="NAME" x="46.99" y="16.2814" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="46.99" y="21.082" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="R24" gate="G$1" x="167.64" y="50.8" smashed="yes" rot="R180">
-<attribute name="NAME" x="171.45" y="49.3014" size="1.778" layer="95" rot="R180"/>
-<attribute name="VALUE" x="171.45" y="54.102" size="1.778" layer="96" rot="R180"/>
+<instance part="R24" gate="G$1" x="213.36" y="48.26" smashed="yes">
+<attribute name="NAME" x="209.55" y="49.7586" size="1.778" layer="95"/>
+<attribute name="VALUE" x="209.55" y="44.958" size="1.778" layer="96"/>
 </instance>
 <instance part="R27" gate="G$1" x="167.64" y="71.12" smashed="yes" rot="R180">
 <attribute name="NAME" x="171.45" y="69.6214" size="1.778" layer="95" rot="R180"/>
@@ -6357,25 +6346,13 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <attribute name="NAME" x="115.57" y="39.1414" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="115.57" y="43.942" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="R1" gate="G$1" x="33.02" y="71.12" smashed="yes" rot="R270">
-<attribute name="NAME" x="34.5186" y="74.93" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="29.718" y="74.93" size="1.778" layer="96" rot="R270"/>
-</instance>
-<instance part="R2" gate="G$1" x="33.02" y="58.42" smashed="yes" rot="R270">
-<attribute name="NAME" x="34.5186" y="62.23" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="29.718" y="62.23" size="1.778" layer="96" rot="R270"/>
-</instance>
-<instance part="R3" gate="G$1" x="38.1" y="58.42" smashed="yes" rot="R270">
-<attribute name="NAME" x="39.5986" y="62.23" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="34.798" y="62.23" size="1.778" layer="96" rot="R270"/>
-</instance>
-<instance part="R4" gate="G$1" x="33.02" y="45.72" smashed="yes" rot="R270">
-<attribute name="NAME" x="34.5186" y="49.53" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="29.718" y="49.53" size="1.778" layer="96" rot="R270"/>
-</instance>
 <instance part="R5" gate="G$1" x="111.76" y="63.5" smashed="yes" rot="R180">
 <attribute name="NAME" x="115.57" y="62.0014" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="115.57" y="66.802" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="R6" gate="G$1" x="236.22" y="48.26" smashed="yes" rot="R180">
+<attribute name="NAME" x="240.03" y="46.7614" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="240.03" y="51.562" size="1.778" layer="96" rot="R180"/>
 </instance>
 </instances>
 <busses>
@@ -6398,8 +6375,8 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <net name="TOUCH" class="0">
 <segment>
 <pinref part="R24" gate="G$1" pin="1"/>
-<wire x1="172.72" y1="50.8" x2="182.88" y2="50.8" width="0.1524" layer="91"/>
-<label x="172.72" y="50.8" size="1.778" layer="95"/>
+<wire x1="208.28" y1="48.26" x2="198.12" y2="48.26" width="0.1524" layer="91"/>
+<label x="208.28" y="48.26" size="1.778" layer="95" rot="R180"/>
 </segment>
 <segment>
 <wire x1="106.68" y1="40.64" x2="99.06" y2="40.64" width="0.1524" layer="91"/>
@@ -6440,21 +6417,19 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <wire x1="154.94" y1="30.48" x2="154.94" y2="33.02" width="0.1524" layer="91"/>
 <pinref part="P+1" gate="VCC" pin="VCC"/>
 </segment>
-<segment>
-<pinref part="R1" gate="G$1" pin="1"/>
-<wire x1="33.02" y1="76.2" x2="33.02" y2="81.28" width="0.1524" layer="91"/>
-<label x="35.56" y="78.74" size="1.778" layer="95"/>
-</segment>
 </net>
-<net name="SW1" class="0">
+<net name="SW_IN" class="0">
 <segment>
 <pinref part="R27" gate="G$1" pin="2"/>
 <label x="152.4" y="60.96" size="1.778" layer="95"/>
 <pinref part="R28" gate="G$1" pin="2"/>
 <wire x1="162.56" y1="71.12" x2="162.56" y2="60.96" width="0.1524" layer="91"/>
 <wire x1="162.56" y1="60.96" x2="152.4" y2="60.96" width="0.1524" layer="91"/>
-<pinref part="R24" gate="G$1" pin="2"/>
-<wire x1="162.56" y1="50.8" x2="162.56" y2="60.96" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="R6" gate="G$1" pin="1"/>
+<wire x1="241.3" y1="48.26" x2="248.92" y2="48.26" width="0.1524" layer="91"/>
+<label x="243.84" y="48.26" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="ENC2A" class="0">
@@ -6469,35 +6444,20 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <label x="119.38" y="71.12" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$2" class="0">
-<segment>
-<pinref part="R2" gate="G$1" pin="2"/>
-<pinref part="R4" gate="G$1" pin="1"/>
-<wire x1="33.02" y1="53.34" x2="33.02" y2="50.8" width="0.1524" layer="91"/>
-<pinref part="R3" gate="G$1" pin="2"/>
-<wire x1="38.1" y1="53.34" x2="33.02" y2="53.34" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="GND" class="0">
-<segment>
-<pinref part="R4" gate="G$1" pin="2"/>
-<wire x1="33.02" y1="40.64" x2="33.02" y2="38.1" width="0.1524" layer="91"/>
-<label x="33.02" y="38.1" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="ENC_SW_PU" class="0">
-<segment>
-<pinref part="R2" gate="G$1" pin="1"/>
-<pinref part="R1" gate="G$1" pin="2"/>
-<wire x1="33.02" y1="63.5" x2="33.02" y2="66.04" width="0.1524" layer="91"/>
-<pinref part="R3" gate="G$1" pin="1"/>
-<wire x1="38.1" y1="63.5" x2="33.02" y2="63.5" width="0.1524" layer="91"/>
-<label x="35.56" y="66.04" size="1.778" layer="95"/>
-</segment>
 <segment>
 <pinref part="R5" gate="G$1" pin="2"/>
 <wire x1="106.68" y1="63.5" x2="99.06" y2="63.5" width="0.1524" layer="91"/>
 <label x="91.44" y="63.5" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="R6" gate="G$1" pin="2"/>
+<wire x1="231.14" y1="48.26" x2="223.52" y2="48.26" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="R24" gate="G$1" pin="2"/>
+<wire x1="218.44" y1="48.26" x2="226.06" y2="48.26" width="0.1524" layer="91"/>
+<label x="233.68" y="45.72" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="ENC2B" class="0">
@@ -6505,6 +6465,86 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 <pinref part="R5" gate="G$1" pin="1"/>
 <wire x1="116.84" y1="63.5" x2="127" y2="63.5" width="0.1524" layer="91"/>
 <label x="119.38" y="63.5" size="1.778" layer="95"/>
+</segment>
+</net>
+</nets>
+</sheet>
+<sheet>
+<plain>
+</plain>
+<instances>
+<instance part="R1" gate="G$1" x="-5.08" y="43.18" smashed="yes" rot="R270">
+<attribute name="NAME" x="-3.5814" y="46.99" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="-8.382" y="46.99" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="R2" gate="G$1" x="-5.08" y="27.94" smashed="yes" rot="R270">
+<attribute name="NAME" x="-3.5814" y="31.75" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="-8.382" y="31.75" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="ENC1" gate="G$2" x="-15.24" y="35.56" smashed="yes">
+<attribute name="PART" x="-20.32" y="40.64" size="1.27" layer="95"/>
+<attribute name="VALUE" x="-20.32" y="33.02" size="1.27" layer="96"/>
+</instance>
+<instance part="R3" gate="G$1" x="-25.4" y="27.94" smashed="yes" rot="R270">
+<attribute name="NAME" x="-23.9014" y="31.75" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="-28.702" y="31.75" size="1.778" layer="96" rot="R270"/>
+</instance>
+<instance part="R4" gate="G$1" x="-38.1" y="27.94" smashed="yes" rot="R270">
+<attribute name="NAME" x="-36.6014" y="31.75" size="1.778" layer="95" rot="R270"/>
+<attribute name="VALUE" x="-41.402" y="31.75" size="1.778" layer="96" rot="R270"/>
+</instance>
+</instances>
+<busses>
+</busses>
+<nets>
+<net name="VCC" class="0">
+<segment>
+<pinref part="R1" gate="G$1" pin="1"/>
+<wire x1="-5.08" y1="48.26" x2="-5.08" y2="50.8" width="0.1524" layer="91"/>
+<label x="-2.54" y="48.26" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="GND" class="0">
+<segment>
+<label x="-2.54" y="20.32" size="1.778" layer="95"/>
+<pinref part="R2" gate="G$1" pin="2"/>
+<wire x1="-5.08" y1="20.32" x2="-5.08" y2="22.86" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="R4" gate="G$1" pin="2"/>
+<wire x1="-38.1" y1="22.86" x2="-38.1" y2="17.78" width="0.1524" layer="91"/>
+<label x="-35.56" y="17.78" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="ENC_SW_PU" class="0">
+<segment>
+<pinref part="R2" gate="G$1" pin="1"/>
+<pinref part="R1" gate="G$1" pin="2"/>
+<wire x1="-5.08" y1="33.02" x2="-5.08" y2="35.56" width="0.1524" layer="91"/>
+<label x="-2.54" y="35.56" size="1.778" layer="95"/>
+<pinref part="ENC1" gate="G$2" pin="1"/>
+<wire x1="-5.08" y1="35.56" x2="-5.08" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="-10.16" y1="35.56" x2="-5.08" y2="35.56" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="ENC_SW" class="0">
+<segment>
+<pinref part="ENC1" gate="G$2" pin="2"/>
+<wire x1="-20.32" y1="35.56" x2="-25.4" y2="35.56" width="0.1524" layer="91"/>
+<label x="-45.72" y="35.56" size="1.778" layer="95"/>
+<pinref part="R3" gate="G$1" pin="1"/>
+<wire x1="-25.4" y1="35.56" x2="-38.1" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="-38.1" y1="35.56" x2="-45.72" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="-25.4" y1="35.56" x2="-25.4" y2="33.02" width="0.1524" layer="91"/>
+<pinref part="R4" gate="G$1" pin="1"/>
+<wire x1="-38.1" y1="33.02" x2="-38.1" y2="35.56" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="SW_OUT" class="0">
+<segment>
+<pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="-25.4" y1="22.86" x2="-17.78" y2="22.86" width="0.1524" layer="91"/>
+<label x="-20.32" y="22.86" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
