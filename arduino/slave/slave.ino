@@ -163,10 +163,10 @@ void setup() {
   blinkTimer.start();
 }
 
-const int FIRST_BUTTON_VOLTAGE = 670;
-const int SECOND_BUTTON_VOLTAGE = 1023;
-const int BOTH_BUTTONS_VOLTAGE = (FIRST_BUTTON_VOLTAGE + SECOND_BUTTON_VOLTAGE) / 2;
-const int BUTTON_VOLTAGE_RANGE = 50;
+const int FIRST_BUTTON_VOLTAGE = 981;
+const int SECOND_BUTTON_VOLTAGE = 660;
+const int BOTH_BUTTONS_VOLTAGE = 828;
+const int BUTTON_VOLTAGE_RANGE = min(BOTH_BUTTONS_VOLTAGE - SECOND_BUTTON_VOLTAGE, FIRST_BUTTON_VOLTAGE - BOTH_BUTTONS_VOLTAGE) / 2;
 
 bool isInRange(int value, int target, int range) {
   return value > target - range && value < target + range;
@@ -191,7 +191,7 @@ byte getButtonStates() {
 #if HAS_FEATURE(M1, BOARD_FEATURE_BUTTON) || HAS_FEATURE(M2, BOARD_FEATURE_BUTTON)
   int swmVoltage = analogRead(SWM);
   ButtonPairStates mButtonStates = voltageToButtonStates(swmVoltage);
-  buttonStates |= (((mButtonStates.firstButtonState ? 1 : 0) << 2) | ((mButtonStates.secondButtonState ? 1 : 0) << 3));
+  buttonStates |= (((mButtonStates.firstButtonState ? 1 : 0) << 2) | ((mButtonStates.secondButtonState ? 1 : 0) << 3)); // TODO: only take the buttons into account if they are enabled
 #endif
 #if HAS_FEATURE(R1, BOARD_FEATURE_BUTTON) || HAS_FEATURE(R2, BOARD_FEATURE_BUTTON)
   int swrVoltage = analogRead(SWR);
@@ -378,6 +378,14 @@ void loop() {
 
   // TODO: check touch
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
+delay(500);
+  int swmVoltage = analogRead(SWM);
+  sendMessage(1, abs(swmVoltage - FIRST_BUTTON_VOLTAGE) & 0xFF, abs(swmVoltage - FIRST_BUTTON_VOLTAGE) >> 8);
+  sendMessage(2, abs(swmVoltage - SECOND_BUTTON_VOLTAGE) & 0xFF, abs(swmVoltage - SECOND_BUTTON_VOLTAGE) >> 8);
+  sendMessage(3, abs(swmVoltage - BOTH_BUTTONS_VOLTAGE) & 0xFF, abs(swmVoltage - BOTH_BUTTONS_VOLTAGE) >> 8);
+  ButtonPairStates mButtonStates = voltageToButtonStates(swmVoltage);
+  sendMessage(DEBUG_BOOT, mButtonStates.firstButtonState ? 1 : 0, mButtonStates.secondButtonState ? 1 : 0);
+  sendMessage(5, switchStates, previousSwitchStates);
   if (previousSwitchStates != switchStates) {
     #if USART_DEBUG_ENABLED
     Serial.print("SWITCHES: ");
@@ -553,7 +561,7 @@ inline void updatePadStates() {
 }
 #endif
 
-inline void updateSwitchStates() {
+inline void updateSwitchStates() { // TODO: this is not called when the second button goes down because the logical state of the pin does not change
 #if PCB_VERSION == 3
   switchStates = getButtonStates();
 #else
