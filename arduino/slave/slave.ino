@@ -415,12 +415,12 @@ void loop() {
     Serial.println(switchStates);
     #endif
     byte changed = previousSwitchStates ^ switchStates;
-    previousSwitchStates = switchStates;
     #if USART_DEBUG_ENABLED
     Serial.print("Changed: ");
     Serial.println(changed);
     #endif
     if (changed) {
+      previousSwitchStates = switchStates;
       // TODO: Do not use SW_INTS for mask on PCB version 3
       for (byte i = 0; i < 3; ++i) {
         byte switchMask = (1 << SW_INTS[i]);
