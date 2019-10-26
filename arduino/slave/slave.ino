@@ -499,8 +499,13 @@ void loop() {
     byte positionChanged = false;
     
     if (BOARD_FEATURES[i] & BOARD_FEATURE_ENCODER) {
-      position = (*encoders[i]).getPosition(); // TODO: use getDirection or create separate relative encoder feature
-      positionChanged = position != positions[i];
+      if (ENCODER_TYPES[i] == ENCODER_TYPE_ABSOLUTE) {
+        position = (*encoders[i]).getPosition();
+        positionChanged = position != positions[i];
+      } else {
+        position = (*encoders[i]).getDirection();
+        positionChanged = position != 0;
+      }
       
 #if USART_DEBUG_ENABLED
       byte stateA = digitalRead(ENCODER_PINS[i][0]);
@@ -531,7 +536,10 @@ void loop() {
     
     if (positionChanged) {
       handlePositionChange(i, position);
-      positions[i] = position;
+
+      if (ENCODER_TYPES[i] == ENCODER_TYPE_ABSOLUTE) {
+        positions[i] = position;
+      }
     }
   }
   #endif
