@@ -289,7 +289,6 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #define ENCR2A (23)
 #define ENCR2B (13)
 
-// TODO: check the values below
 // MSK2
 #define SWL (1)
 #define SWM (11)
