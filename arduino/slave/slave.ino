@@ -409,14 +409,6 @@ void loop() {
 
   // TODO: check touch
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
-delay(500);
-  int swmVoltage = analogRead(SWM);
-  sendMessage(1, abs(swmVoltage - FIRST_BUTTON_VOLTAGE) & 0xFF, abs(swmVoltage - FIRST_BUTTON_VOLTAGE) >> 8);
-  sendMessage(2, abs(swmVoltage - SECOND_BUTTON_VOLTAGE) & 0xFF, abs(swmVoltage - SECOND_BUTTON_VOLTAGE) >> 8);
-  sendMessage(3, abs(swmVoltage - BOTH_BUTTONS_VOLTAGE) & 0xFF, abs(swmVoltage - BOTH_BUTTONS_VOLTAGE) >> 8);
-  ButtonPairStates mButtonStates = voltageToButtonStates(swmVoltage);
-  sendMessage(DEBUG_BOOT, mButtonStates.firstButtonState ? 1 : 0, mButtonStates.secondButtonState ? 1 : 0);
-  sendMessage(5, switchStates, previousSwitchStates);
   if (previousSwitchStates != switchStates) {
     #if USART_DEBUG_ENABLED
     Serial.print("SWITCHES: ");
