@@ -378,7 +378,30 @@ inline void setupI2c() {
   }
 }
 
+#ifdef PORT_STATE_DEBUG
+byte previousB = 0;
+byte previousC = 0;
+byte previousD = 0;
+#endif
+
 void loop() {
+#ifdef PORT_STATE_DEBUG
+  byte maskedPinC = PINC; // & 0x00001111;
+  if (previousB != PINB) {
+    sendMessage(1, PINB, 100);
+  }
+  if (previousC != maskedPinC) {
+    sendMessage(2, PINC, 100);
+  }
+  if (previousD != PIND) {
+    sendMessage(3, PIND, 100);
+  }
+
+  previousB = PINB;
+  previousC = maskedPinC;
+  previousD = PIND;
+  return;
+#endif
   
 #ifdef BOARD_HAS_DEBUG_LED
   blinkTimer.run();
