@@ -623,15 +623,29 @@ ISR(PCINT1_vect) {
     (*encoders[BOARD_L1]).tick();
   #endif
 
+#elif PCB_VERSION == 1
+
+  #if HAS_FEATURE(R2, BOARD_FEATURE_ENCODER)
+    (*encoders[BOARD_L1]).tick();
+  #endif
+  
+  #if HAS_FEATURE(L2, BOARD_FEATURE_ENCODER)
+    (*encoders[BOARD_L1]).tick();
+  #endif
 
 #else
 
-#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
-  updatePadStates();
   #if HAS_FEATURE(M, BOARD_FEATURE_ENCODER)
     (*encoders[BOARD_M]).tick();
   #endif
+
 #endif
+
+#if PCB_VERSION != 3
+
+  #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+    updatePadStates();
+  #endif
 
 #endif
 
