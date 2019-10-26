@@ -214,13 +214,11 @@ byte getButtonStates() {
 
 inline void setupInterrupts() {
   PCICR |= (1 << PCIE0) | (1 << PCIE1) | (1 << PCIE2);
-  
-  #ifndef USART_DEBUG_ENABLED
+
   if (BOARD_FEATURES[BOARD_L2] & BOARD_FEATURE_ENCODER) {
     enablePCINT(ENCL2A);
     enablePCINT(ENCL2B);
   }
-  #endif
 
   if (BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_ENCODER) {
     enablePCINT(ENCL1A);
@@ -697,10 +695,8 @@ ISR(PCINT2_vect) {
 #endif
 
 
-#ifndef USART_DEBUG_ENABLED
 #if HAS_FEATURE(L2, BOARD_FEATURE_ENCODER)
   (*encoders[BOARD_L2]).tick();
-#endif
 #endif
 
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)

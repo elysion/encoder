@@ -65,6 +65,6 @@ static const byte BOARD_FEATURES[] = {
 //#define PORT_STATE_DEBUG
 //#define INTERRUPT_DEBUG
 //#define ENCODER_PIN_DEBUG
-#define SKIP_FEATURE_VALIDATION // TODO: Why does feature validation fail at the moment?
+//#define SKIP_FEATURE_VALIDATION // TODO: Why does feature validation fail at the moment?
 
 #endif // CONFIG_H
