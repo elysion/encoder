@@ -99,6 +99,11 @@ static const byte PAD_PINS[][4] {
 #define ANY_BOARD_HAS_FEATURE(FEATURE) (HAS_FEATURE(L2, FEATURE) || HAS_FEATURE(L1, FEATURE) || HAS_FEATURE(M, FEATURE) || HAS_FEATURE(R1, FEATURE) || HAS_FEATURE(R2, FEATURE))
 #endif
 
+#define TICK_BOARD(BOARD_ID) \
+if (HAS_FEATURE(BOARD_ID, BOARD_FEATURE_ENCODER)) {\
+  (*encoders[BOARD_##BOARD_ID]).tick();\
+}
+
 struct ButtonPairStates {
   bool firstButtonState;
   bool secondButtonState;

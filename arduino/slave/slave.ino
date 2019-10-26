@@ -596,21 +596,14 @@ ISR(PCINT0_vect) {
   interrupter = 0;
 #endif
 
-#if HAS_FEATURE(R2, BOARD_FEATURE_ENCODER)
-  (*encoders[BOARD_R2]).tick();
-#endif
+  TICK_BOARD(R2);
 
 #if PCB_VERSION == 3
-
-  #if HAS_FEATURE(M2, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_M2]).tick();
-  #endif
+  TICK_BOARD(M2);
 
 #else
 
-  #if HAS_FEATURE(R1, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_R1]).tick();
-  #endif
+  TICK_BOARD(R1);
   
   #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
     updatePadStates();
@@ -626,26 +619,14 @@ ISR(PCINT1_vect) {
 #endif
 
 #if PCB_VERSION == 3
-  
-  #if HAS_FEATURE(L1, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_L1]).tick();
-  #endif
+  TICK_BOARD(L1);
 
 #elif PCB_VERSION == 1
-
-  #if HAS_FEATURE(R2, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_L1]).tick();
-  #endif
-  
-  #if HAS_FEATURE(L2, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_L1]).tick();
-  #endif
+  TICK_BOARD(R2);
+  TICK_BOARD(L2);
 
 #else
-
-  #if HAS_FEATURE(M, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_M]).tick();
-  #endif
+  TICK_BOARD(M);
 
 #endif
 
@@ -669,35 +650,21 @@ ISR(PCINT2_vect) {
 #endif
 
 #if PCB_VERSION == 3
-
-  #if HAS_FEATURE(M1, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_M1]).tick();
-  #endif
-  #if HAS_FEATURE(L2, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_M2]).tick();
-  #endif
-  #if HAS_FEATURE(R1, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_R1]).tick();
-  #endif
-
+  TICK_BOARD(M1);
+  TICK_BOARD(L2);
+  TICK_BOARD(R1);
 #else
 
-  #if HAS_FEATURE(M, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_M]).tick();
-  #endif
-  #if HAS_FEATURE(L1, BOARD_FEATURE_ENCODER)
-    (*encoders[BOARD_L1]).tick();
-  #endif
+  TICK_BOARD(M);
+  TICK_BOARD(L1);
+  
   #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
     updatePadStates();
   #endif
 
 #endif
 
-
-#if HAS_FEATURE(L2, BOARD_FEATURE_ENCODER)
-  (*encoders[BOARD_L2]).tick();
-#endif
+  TICK_BOARD(L2);
 
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   updateSwitchStates();
