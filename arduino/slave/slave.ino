@@ -596,10 +596,10 @@ inline void updateSwitchStates() { // TODO: this is not called when the second b
 #if PCB_VERSION == 3
   switchStates = getButtonStates();
 #else
-  switchStates = PINC &
-    ((!!(BOARD_FEATURES[1] & BOARD_FEATURE_BUTTON) << SW_INTS[1]) |
-    (!!(BOARD_FEATURES[2] & BOARD_FEATURE_BUTTON) << SW_INTS[2]) |
-    (!!(BOARD_FEATURES[3] & BOARD_FEATURE_BUTTON) << SW_INTS[3]));
+  switchStates = SWITCH_PORT &
+    ((!!(BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_BUTTON) << SW_INTS[BOARD_L1]) |
+    (!!(BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_BUTTON) << SW_INTS[BOARD_M]) |
+    (!!(BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_BUTTON) << SW_INTS[BOARD_R1]));
 #endif
 }
 
