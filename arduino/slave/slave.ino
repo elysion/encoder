@@ -1,4 +1,7 @@
+#ifdef BOARD_HAS_DEBUG_LED
 #include <MillisTimer.h>
+#endif
+
 #include <Adafruit_NeoPixel.h>
 #include <RotaryEncoder.h>
 #include <Wire.h>
@@ -117,10 +120,12 @@ byte states[] = {
 byte interrupter = 255;
 #define LED_BUILTIN_AVAILABLE (BOARD_FEATURES_R2 == NO_BOARD) // TODO: only disable when R2 uses encoder? (How does the pull-up on the pin affect this need?) 
 
+#ifdef BOARD_HAS_DEBUG_LED
 void blinkBuiltinLed(MillisTimer &timer __attribute__((unused))) {
   toggleBuiltinLed();
 }
 MillisTimer blinkTimer = MillisTimer(1000, blinkBuiltinLed);
+#endif
 
 void(* reset) (void) = 0;
 
@@ -160,7 +165,9 @@ void setup() {
   switchStates = previousSwitchStates = getButtonStates(); // TODO: construct mask according to enabled buttons
   // TODO: initialize touch states
 
+#ifdef BOARD_HAS_DEBUG_LED
   blinkTimer.start();
+#endif
 }
 
 const int FIRST_BUTTON_VOLTAGE = 981;
@@ -374,7 +381,10 @@ inline void setupI2c() {
 }
 
 void loop() {
+  
+#ifdef BOARD_HAS_DEBUG_LED
   blinkTimer.run();
+#endif
 
   // TODO: check touch
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)

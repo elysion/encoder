@@ -104,4 +104,7 @@ struct ButtonPairStates {
   bool secondButtonState;
 };
 
+#if PCB_VERSION == 3
+#define BOARD_HAS_DEBUG_LED
+#endif
 #endif
