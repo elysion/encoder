@@ -197,12 +197,12 @@ byte getButtonStates() {
   int swrVoltage = analogRead(SWR);
   ButtonPairStates rButtonStates = voltageToButtonStates(swrVoltage);
   buttonStates |= (((rButtonStates.firstButtonState ? 1 : 0) << 4) | ((rButtonStates.secondButtonState ? 1 : 0) << 5));
-#endif
+#endif  
+
+  return buttonStates;
 #else
   return PINC & SW_INTS_MASK;
 #endif
-
-  return buttonStates;
 }
 
 inline void setupInterrupts() {
