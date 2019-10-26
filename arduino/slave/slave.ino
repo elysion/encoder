@@ -526,9 +526,9 @@ void loop() {
 #endif
 #if PCB_VERSION != 3
     } else if (BOARD_FEATURES[i] & BOARD_FEATURE_POT) {
-      positionChanged = position != positions[i] && (position == 0 || position == 127 || POT_CHANGE_THRESHOLD < abs(positions[i] - position));
       // Resolution restricted to 7-bits for MIDI compatibility
       position = analogRead(POT_PINS[i]) >> 3;
+      positionChanged = position != positions[i] && (position == 0 || position == 127 || POT_CHANGE_THRESHOLD < abs(positions[i] - position));
 #endif
     } else {
       continue;
