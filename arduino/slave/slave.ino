@@ -422,7 +422,7 @@ void loop() {
     if (changed) {
       previousSwitchStates = switchStates;
       // TODO: Do not use SW_INTS for mask on PCB version 3
-      for (byte i = 0; i < 3; ++i) {
+      for (byte i = BOARD_L1; i <= BOARD_R1; ++i) {
         byte switchMask = (1 << SW_INTS[i]);
         if (changed & switchMask) {
           handleButtonChange(i, (switchStates & switchMask) ? 0 : 1);
