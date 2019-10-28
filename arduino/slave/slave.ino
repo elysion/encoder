@@ -7,9 +7,6 @@
 #include <Wire.h>
 #include <EEPROM.h>
 
-#define USART_DEBUG_ENABLED 1
-#define SKIP_FEATURE_VALIDATION
-
 #include "config.h"
 #include "shared.h"
 #include "slave.h"
