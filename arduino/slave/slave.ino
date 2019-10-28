@@ -306,6 +306,18 @@ inline void setupPinModes() {
       pinMode(ENCODER_PINS[i][1], INPUT_PULLUP);
     }
 
+    if (boardFeatures & BOARD_FEATURE_MATRIX) {
+      for (byte output = 0; output < MATRIX_OUTPUTS; ++output) {
+        byte pin = BUTTON_MATRIX_OUTPUT_PINS[BOARD_MATRIX_INDEX(i)][output];
+        pinMode(pin, OUTPUT);
+        digitalWrite(pin, HIGH);
+      }
+      for (byte input = 0; input < MATRIX_INPUTS; ++input) {
+        sendMessage(DEBUG_BOOT + 2, BOARD_MATRIX_INDEX(i), input);
+        pinMode(BUTTON_MATRIX_INPUT_PINS[BOARD_MATRIX_INDEX(i)][input], INPUT_PULLUP);
+      }
+    }
+
     if (boardFeatures & BOARD_FEATURE_BUTTON) {
 #if PCB_VERSION == 3
       pinMode(BUTTON_PINS[i], INPUT);
@@ -381,6 +393,21 @@ byte previousC = 0;
 byte previousD = 0;
 #endif
 
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_MATRIX)
+byte previousMatrixButtonStates[MAX_MATRIX_BOARD_COUNT][MATRIX_OUTPUTS] = {
+  {
+    0,
+    0,
+    0
+  },
+  {
+    0,
+    0,
+    0
+  }
+};
+#endif
+
 void loop() {
 #ifdef PORT_STATE_DEBUG
   byte maskedPinC = PINC; // & 0x00001111;
@@ -402,6 +429,30 @@ void loop() {
   
 #ifdef BOARD_HAS_DEBUG_LED
   blinkTimer.run();
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_MATRIX)
+  for (byte board = BOARD_L1; board <= BOARD_R1; ++board) {
+    if (BOARD_FEATURES[board] & BOARD_FEATURE_MATRIX) {
+      byte boardMatrixIndex = BOARD_MATRIX_INDEX(board);
+      for (byte output = 0; output < MATRIX_OUTPUTS; ++output) {
+        byte inputStates = 0;
+        byte previousInputStates = previousMatrixButtonStates[boardMatrixIndex][output];
+        digitalWrite(BUTTON_MATRIX_OUTPUT_PINS[boardMatrixIndex][output], LOW);
+        delay(10);
+        for (byte input = 0; input < MATRIX_INPUTS; ++input) {
+          byte currentState = digitalRead(BUTTON_MATRIX_INPUT_PINS[boardMatrixIndex][input]) == HIGH ? 0 : 1;
+          if (currentState != bitRead(previousInputStates, input)) {
+            // TODO: this will conflict with button on M / M1 & M2
+            handleButtonChange(boardMatrixIndex * MATRIX_INPUTS * MATRIX_OUTPUTS + MATRIX_INPUTS * output + input, currentState);
+          }
+          bitWrite(inputStates, input, currentState);
+        }
+        digitalWrite(BUTTON_MATRIX_OUTPUT_PINS[boardMatrixIndex][output], HIGH);
+        previousMatrixButtonStates[boardMatrixIndex][output] = inputStates;
+      }
+    }
+  }
 #endif
 
   // TODO: check touch
