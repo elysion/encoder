@@ -101,7 +101,7 @@ int positions[] = {
   0
 };
 
-#if USART_DEBUG_ENABLED
+#ifdef USART_DEBUG_ENABLED
 byte states[] = {
   LOW, LOW, 
   LOW, LOW,
@@ -339,7 +339,7 @@ inline void setupPinModes() {
 #if PCB_VERSION != 3 // TODO
     if (BOARD_FEATURES[i] & BOARD_FEATURE_PADS) {
       for (byte j = 0; j < 4; ++j) {
-        #if USART_DEBUG_ENABLED
+        #ifdef USART_DEBUG_ENABLED
         Serial.print("Configuring pin as input: ");
         Serial.println(PAD_PINS[i][j]);
         #endif
@@ -458,12 +458,12 @@ void loop() {
   // TODO: check touch
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   if (previousSwitchStates != switchStates) {
-    #if USART_DEBUG_ENABLED
+    #ifdef USART_DEBUG_ENABLED
     Serial.print("SWITCHES: ");
     Serial.println(switchStates);
     #endif
     byte changed = previousSwitchStates ^ switchStates;
-    #if USART_DEBUG_ENABLED
+    #ifdef USART_DEBUG_ENABLED
     Serial.print("Changed: ");
     Serial.println(changed);
     #endif
@@ -483,13 +483,13 @@ void loop() {
 #if PCB_VERSION != 3 // TODO
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_TOUCH)
   if (previousTouchStates != touchStates) {
-    #if USART_DEBUG_ENABLED
+    #ifdef USART_DEBUG_ENABLED
     Serial.print("TOUCHES: ");
     Serial.println(touchStates);
     #endif
     byte changed = previousTouchStates ^ touchStates;
     previousTouchStates = touchStates;
-    #if USART_DEBUG_ENABLED
+    #ifdef USART_DEBUG_ENABLED
     Serial.print("Changed: ");
     Serial.println(changed);
     #endif
@@ -513,13 +513,13 @@ void loop() {
     const byte boardPadStates = padStates[padStateIndex];
     const byte previousBoardPadStates = previousPadStates[padStateIndex];
     if (previousBoardPadStates != boardPadStates) {
-      #if USART_DEBUG_ENABLED
+      #ifdef USART_DEBUG_ENABLED
       Serial.print("BOARD: ");
       Serial.println(board);
       #endif
       byte changed = previousBoardPadStates ^ boardPadStates;
       previousPadStates[padStateIndex] = boardPadStates;
-      #if USART_DEBUG_ENABLED
+      #ifdef USART_DEBUG_ENABLED
       Serial.print("Changed: ");
       Serial.println(changed);
       #endif
@@ -555,7 +555,7 @@ void loop() {
         positionChanged = position != 0;
       }
       
-#if USART_DEBUG_ENABLED
+#ifdef USART_DEBUG_ENABLED
       byte stateA = digitalRead(ENCODER_PINS[i][0]);
       byte stateB = digitalRead(ENCODER_PINS[i][1]);
   
@@ -592,7 +592,7 @@ void loop() {
   }
   #endif
 
-  #if USART_DEBUG_ENABLED
+  #ifdef USART_DEBUG_ENABLED
   if (Serial.available()) {        // If anything comes in Serial,
     Serial.write(Serial.read());   // read it and send it out
   }
@@ -629,7 +629,7 @@ inline void updatePadStates() {
     if (BOARD_FEATURES[board] & BOARD_FEATURE_PADS) {
       const byte padStateIndex = board - 1;
       padStates[padStateIndex] = readPadPin(board, 3) | readPadPin(board, 2) | readPadPin(board, 1) | readPadPin(board, 0);
-      #if USART_DEBUG_ENABLED
+      #ifdef USART_DEBUG_ENABLED
       Serial.print("BOARD PADS ");
       Serial.println(board);
       Serial.print("States: ");
@@ -663,7 +663,7 @@ inline void updateTouchStates() {
 
 // !!NOTE!!: Do not call sendMessage in ISRs
 ISR(PCINT0_vect) {
-#if USART_DEBUG_ENABLED
+#ifdef USART_DEBUG_ENABLED
   interrupter = 0;
 #endif
 
@@ -685,7 +685,7 @@ ISR(PCINT0_vect) {
 
 // !!NOTE!!: Do not call sendMessage in ISRs
 ISR(PCINT1_vect) {
-#if USART_DEBUG_ENABLED
+#ifdef USART_DEBUG_ENABLED
   interrupter = 1;
 #endif
 
@@ -716,7 +716,7 @@ ISR(PCINT1_vect) {
 
 // !!NOTE!!: Do not call sendMessage in ISRs
 ISR(PCINT2_vect) {
-#if USART_DEBUG_ENABLED
+#ifdef USART_DEBUG_ENABLED
   interrupter = 2;
 #endif
 
