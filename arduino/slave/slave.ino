@@ -555,7 +555,7 @@ void loop() {
         positionChanged = position != 0;
       }
       
-#ifdef USART_DEBUG_ENABLED
+#if defined(USART_DEBUG_ENABLED) && defined(INTERRUPT_DEBUG)
       byte stateA = digitalRead(ENCODER_PINS[i][0]);
       byte stateB = digitalRead(ENCODER_PINS[i][1]);
   
