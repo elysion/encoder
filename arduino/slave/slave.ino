@@ -147,7 +147,8 @@ void setup() {
   interrupts();
 
   Serial.begin(115200);
-  
+
+  delay(100);
   setupI2c();
 
   #ifndef USART_DEBUG_ENABLED
