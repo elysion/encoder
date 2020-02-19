@@ -395,14 +395,14 @@ static const uint8_t ENCL1A_INT = PCINT8;
 static const uint8_t ENCL1B_INT = PCINT9;
 static const uint8_t ENCL2A_INT = PCINT17;
 static const uint8_t ENCL2B_INT = PCINT16;
-static const uint8_t ENCM1A_INT = PCINT18;
-static const uint8_t ENCM1B_INT = PCINT19;
-static const uint8_t ENCM2A_INT = PCINT6;
-static const uint8_t ENCM2B_INT = PCINT7;
-static const uint8_t ENCR1A_INT = PCINT21;
-static const uint8_t ENCR1B_INT = PCINT22;
-static const uint8_t ENCR2A_INT = PCINT0;
-static const uint8_t ENCR2B_INT = PCINT1;
+static const uint8_t ENCM1A_INT = PCINT21;
+static const uint8_t ENCM1B_INT = PCINT22;
+static const uint8_t ENCM2A_INT = PCINT0;
+static const uint8_t ENCM2B_INT = PCINT1;
+static const uint8_t ENCR1A_INT = PCINT20;
+static const uint8_t ENCR1B_INT = PCINT19;
+static const uint8_t ENCR2A_INT = PCINT6;
+static const uint8_t ENCR2B_INT = PCINT7;
 
 //NOTE: Current implementation expects the switches to be on the same port
 #define SWL_INT NOT_POSSIBLE
