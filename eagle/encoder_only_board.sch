@@ -6611,6 +6611,9 @@ Riittääkö käyttää LED rinkuloiden powereita?</text>
 </sheet>
 <sheet>
 <plain>
+<text x="-22.86" y="25.4" size="1.778" layer="91">Board 1 only</text>
+<text x="-2.54" y="25.4" size="1.778" layer="91">Board 1 only</text>
+<text x="-33.02" y="20.32" size="1.778" layer="91" rot="R90">Board 1 only?</text>
 </plain>
 <instances>
 <instance part="R1" gate="G$1" x="-5.08" y="43.18" smashed="yes" rot="R270">
