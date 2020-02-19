@@ -602,6 +602,12 @@ void loop() {
 }
 
 void handlePositionChange(byte input, byte state) { // state cannot be byte if full resolution of ADC is used (max value = 1023)
+#if defined(USART_DEBUG_ENABLED)
+  Serial.print("handlePositionChange, input: ");
+  Serial.print(input);
+  Serial.print(", state: ");
+  Serial.println(state);
+#endif
   sendMessage(input, state, CONTROL_TYPE_POSITION);
 }
 
