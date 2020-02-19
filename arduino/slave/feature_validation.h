@@ -60,8 +60,10 @@ static_assert(!HAS_FEATURE(M, BOARD_FEATURE_PADS), "Cannot use PADS on M when US
 static_assert(!HAS_FEATURE(M, BOARD_FEATURE_ENCODER), "Cannot use ENCODER on M when USART_DEBUG_ENABLED");
 #elif PCB_VERSION == 2
 static_assert(!HAS_FEATURE(M, BOARD_FEATURE_PADS), "Cannot use PADS on M when USART_DEBUG_ENABLED");
-static_assert(!HAS_FEATURE(L2, BOARD_FEATURE_ENCODER), "Cannot use ENCODER on L2 when USART_DEBUG_ENABLED");
 static_assert(!HAS_FEATURE(L2, BOARD_FEATURE_TOUCH), "Cannot use TOUCH on L2 when USART_DEBUG_ENABLED");
+#endif
+#if PCB_VERSION == 2 || PCB_VERSION == 3
+static_assert(!HAS_FEATURE(L2, BOARD_FEATURE_ENCODER), "Cannot use ENCODER on L2 when USART_DEBUG_ENABLED");
 #endif
 #endif
 
