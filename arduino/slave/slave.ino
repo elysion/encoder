@@ -370,6 +370,7 @@ inline void setupI2c() {
 
     if (address == 255) {
       Serial.println("Did not receive address from master. Resetting.");
+      delay(1000);
       reset();
     }
   
