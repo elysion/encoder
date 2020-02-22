@@ -129,14 +129,9 @@ void Slave_::update() {
 
   // TODO: check touch
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
-//  delay(500);
-//  int swmVoltage = analogRead(SWM);
-//  sendMessage(1, abs(swmVoltage - FIRST_BUTTON_VOLTAGE) & 0xFF, abs(swmVoltage - FIRST_BUTTON_VOLTAGE) >> 8);
-//  sendMessage(2, abs(swmVoltage - SECOND_BUTTON_VOLTAGE) & 0xFF, abs(swmVoltage - SECOND_BUTTON_VOLTAGE) >> 8);
-//  sendMessage(3, abs(swmVoltage - BOTH_BUTTONS_VOLTAGE) & 0xFF, abs(swmVoltage - BOTH_BUTTONS_VOLTAGE) >> 8);
-//  ButtonPairStates mButtonStates = voltageToButtonStates(swmVoltage);
-//  sendMessage(DEBUG_BOOT, mButtonStates.firstButtonState ? 1 : 0, mButtonStates.secondButtonState ? 1 : 0);
-//  sendMessage(5, switchStates, previousSwitchStates);
+  #if PCB_VERSION == 3
+  updateSwitchStates();
+  #endif
   if (previousSwitchStates != switchStates) {
     #ifdef USART_DEBUG_ENABLED
     Serial.print("SWS: ");
@@ -149,13 +144,20 @@ void Slave_::update() {
     #endif
     if (changed) {
       previousSwitchStates = switchStates;
-      // TODO: Do not use SW_INTS for mask on PCB version 3
+      #if PCB_VERSION == 3
+      for (uint8_t board = BOARD_L2; board <= BOARD_R2; ++board) {
+        if (changed & (1 << board)) {
+          handler(board, CONTROL_TYPE_BUTTON, 0, switchStates & (1 << board) ? 0 : 1);
+        }
+      }
+      #else
       for (uint8_t i = BOARD_L1; i <= BOARD_R1; ++i) {
         uint8_t switchMask = (1 << SW_INTS[i]);
         if (changed & switchMask) {
           handler(i, CONTROL_TYPE_BUTTON, 0, (switchStates & switchMask) ? 0 : 1);
         }
       }
+      #endif
     }
   }
 #endif
