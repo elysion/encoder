@@ -68,12 +68,6 @@ void setup() {
   #endif
 }
 
-#ifdef PORT_STATE_DEBUG
-byte previousB = 0;
-byte previousC = 0;
-byte previousD = 0;
-#endif
-
 void loop() {
   Slave.update();
   
