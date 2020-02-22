@@ -66,6 +66,10 @@ void setup() {
   #ifdef BOARD_HAS_DEBUG_LED
   blinkTimer.start();
   #endif
+
+  #ifndef USART_DEBUG_ENABLED
+  Serial.end();
+  #endif
 }
 
 void loop() {

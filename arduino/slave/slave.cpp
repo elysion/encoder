@@ -72,10 +72,6 @@ void Slave_::setup(ChangeHandler changeHandler) {
   delay(10);
   setupI2c();
 
-  #ifndef USART_DEBUG_ENABLED
-  Serial.end();
-  #endif
-
   setupPinModes();
   // TODO: Move interrupt initializations to the loop in setupPinModes();
   setupInterrupts();
