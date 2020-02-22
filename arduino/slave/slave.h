@@ -1,41 +1,24 @@
 #ifndef SLAVE_H
 #define SLAVE_H
 
-static const byte POT_CHANGE_THRESHOLD = 5;
-static const byte MATRIX_OUTPUTS = 3;
-static const byte MATRIX_INPUTS = 3;
-static const byte MAX_MATRIX_BOARD_COUNT = 2;
+typedef uint8_t byte;
+#include <pins_arduino.h>
+#include <Adafruit_NeoPixel.h>
+#include <RotaryEncoder.h>
 
-#define BOARD_MATRIX_INDEX(BOARD) (BOARD == BOARD_L1 ? 0 : BOARD == BOARD_R1 ? 1 : -1)
+#include "features.h"
+#include "shared.h"
+#include "types.h"
+// TODO: if this is not imported here, the initialization will fail and the device will not work properly
+// TODO: this should be fixed in order to be able to use this code as a library
+#include "config.h"
 
-enum Board {
-  BOARD_L2,
-  BOARD_L1,
-#if PCB_VERSION == 3
-  BOARD_M1,
-  BOARD_M2,
-#else
-  BOARD_M,
-#endif
-  BOARD_R1,
-  BOARD_R2
+struct ButtonPairStates {
+  bool firstButtonState;
+  bool secondButtonState;
 };
 
-enum EncoderType {
-  ENCODER_TYPE_RELATIVE,
-  ENCODER_TYPE_ABSOLUTE
-};
-
-#define NO_BOARD (0)
-#define BOARD_FEATURE_ENCODER _BV(0)
-#define BOARD_FEATURE_BUTTON _BV(1)
-#define BOARD_FEATURE_POT _BV(2)
-#define BOARD_FEATURE_TOUCH _BV(3)
-#define BOARD_FEATURE_PADS _BV(4)
-#define BOARD_FEATURE_LED _BV(5)
-#define BOARD_FEATURE_MATRIX _BV(6)
-
-static const byte ENCODER_PINS[BOARD_COUNT][2] = {
+static const uint8_t ENCODER_PINS[BOARD_COUNT][2] = {
   {ENCL2A, ENCL2B},
   {ENCL1A, ENCL1B},
 #if PCB_VERSION == 3
@@ -48,8 +31,172 @@ static const byte ENCODER_PINS[BOARD_COUNT][2] = {
   {ENCR2A, ENCR2B}
 };
 
+class Slave_;
+typedef void (*ChangeHandler)(Board, ControlType, uint8_t /*input*/, uint8_t /*state*/);
+
+class Slave_
+{
+public:
+  Slave_();
+  void setup(ChangeHandler = NULL);
+  void update();
+  void sendMessage(uint8_t input, uint8_t value, ControlType type);
+  void toggleBuiltinLed();
+  void tickEncoder(Board board);
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
+  void updateSwitchStates();
+#endif
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+  void updatePadStates();
+#endif
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
+  void setLedColor(Board board, uint16_t position, uint16_t color);
+  void fillLeds(Board board, uint16_t color, uint16_t first = 0, uint16_t count = 0);
+  void showLeds(Board board);
+
+  static uint32_t Color(uint8_t r, uint8_t g, uint8_t b) {
+    return Adafruit_NeoPixel::Color(r, g, b);
+  }
+  static uint32_t Color(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
+    return Adafruit_NeoPixel::Color(r, g, b, w);
+  }
+#endif
+
+private:
+  inline void setupI2c();
+  inline void setupPinModes();
+  inline void setupInterrupts();
+  inline uint8_t readPadPin(uint8_t board, uint8_t pin);
+  void handleButtonChange(uint8_t input, uint8_t state); // TODO make this customizable
+  void handlePositionChange(uint8_t input, uint8_t state); // TODO make this customizable
+
+  #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
+  Adafruit_NeoPixel* ledsForBoard(Board board);
+  #endif
+
+  #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
+  ButtonPairStates voltageToButtonStates(int voltage);
+  uint8_t getButtonStates();
+  #endif
+
+  ChangeHandler handler;
+  Adafruit_NeoPixel* leds[3];
+  
+  volatile int address;
+
+  uint8_t switchStates;
+  uint8_t previousSwitchStates;
+  
+  #if PCB_VERSION != 3 // TODO
+  uint8_t touchStates;
+  uint8_t previousTouchStates;
+  #endif
+
+// TODO: config should somehow be project specific if this code is to be used as a library
+  #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_MATRIX)
+  uint8_t previousMatrixButtonStates[MAX_MATRIX_BOARD_COUNT][MATRIX_OUTPUTS] = {
+    {
+      0,
+      0,
+      0
+    },
+    {
+      0,
+      0,
+      0
+    }
+  };
+  #endif
+
+  #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
+  uint8_t padStates[3];
+  uint8_t previousPadStates[3];
+  #endif
+
+  #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_ENCODER)
+  RotaryEncoder* encoders[BOARD_COUNT] = {
+  #if BOARD_FEATURES_L2 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_L2][0], ENCODER_PINS[BOARD_L2][1])
+  #else
+  0
+  #endif
+  ,
+  #if BOARD_FEATURES_L1 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_L1][0], ENCODER_PINS[BOARD_L1][1])
+  #else
+  0
+  #endif
+  ,
+  #if PCB_VERSION == 3
+    #if BOARD_FEATURES_M1 & BOARD_FEATURE_ENCODER
+    new RotaryEncoder(ENCODER_PINS[BOARD_M1][0], ENCODER_PINS[BOARD_M1][1])
+    #else
+    0
+    #endif
+    ,
+    #if BOARD_FEATURES_M2 & BOARD_FEATURE_ENCODER
+    new RotaryEncoder(ENCODER_PINS[BOARD_M2][0], ENCODER_PINS[BOARD_M2][1])
+    #else
+    0
+    #endif
+  #else
+    #if BOARD_FEATURES_M & BOARD_FEATURE_ENCODER
+    new RotaryEncoder(ENCODER_PINS[BOARD_M][0], ENCODER_PINS[BOARD_M][1])
+    #else
+    0
+    #endif
+  #endif
+    
+    ,
+    #if BOARD_FEATURES_R1 & BOARD_FEATURE_ENCODER
+    new RotaryEncoder(ENCODER_PINS[BOARD_R1][0], ENCODER_PINS[BOARD_R1][1])
+    #else
+    0
+    #endif
+    ,
+    #if BOARD_FEATURES_R2 & BOARD_FEATURE_ENCODER
+    new RotaryEncoder(ENCODER_PINS[BOARD_R2][0], ENCODER_PINS[BOARD_R2][1])
+    #else
+    0
+    #endif
+  };
+  
+  int positions[BOARD_COUNT]  = {
+    0, 
+    0,
+    0,
+  #if PCB_VERSION == 3
+    0,
+  #endif
+    0, 
+    0
+  };
+  #endif
+  
+  #ifdef USART_DEBUG_ENABLED
+  uint8_t states[BOARD_COUNT*2] = {
+    LOW, LOW, 
+    LOW, LOW,
+    LOW, LOW,
+  #if PCB_VERSION == 3
+    LOW, LOW,
+  #endif
+    LOW, LOW, 
+    LOW, LOW
+  };
+  #endif
+};
+
+#define BOARD_MATRIX_INDEX(BOARD) (BOARD == BOARD_L1 ? 0 : BOARD == BOARD_R1 ? 1 : -1)
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
+const int FIRST_BUTTON_VOLTAGE = 981;
+const int SECOND_BUTTON_VOLTAGE = 660;
+const int BOTH_BUTTONS_VOLTAGE = 828;
+const int BUTTON_VOLTAGE_RANGE = min(BOTH_BUTTONS_VOLTAGE - SECOND_BUTTON_VOLTAGE, FIRST_BUTTON_VOLTAGE - BOTH_BUTTONS_VOLTAGE) / 2;
+
 #if PCB_VERSION == 3
-static const byte BUTTON_PINS[] = {
+static const uint8_t BUTTON_PINS[] = {
   SWL,
   SWL,
   SWM,
@@ -58,16 +205,20 @@ static const byte BUTTON_PINS[] = {
   SWR
 };
 #else
-static const byte BUTTON_PINS[] = {
+static const uint8_t BUTTON_PINS[] = {
   NOT_POSSIBLE,
   SWL,
   SWM,
   SWR
 };
 #endif
+#endif
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_POT)
+static const uint8_t POT_CHANGE_THRESHOLD = 5;
 
 #if PCB_VERSION != 3
-static const byte POT_PINS[] = {
+static const uint8_t POT_PINS[] = {
   NOT_POSSIBLE,
   POTL,
   POTM,
@@ -76,25 +227,34 @@ static const byte POT_PINS[] = {
 #endif
 
 #if PCB_VERSION != 3
-static const byte TOUCH_PINS[] = {
+static const uint8_t TOUCH_PINS[] = {
   NOT_POSSIBLE,
   ENCL2B,
   TOUCH,
   ENCR2B
 };
 #endif
+#endif
 
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
 #if PCB_VERSION != 3
-static const byte PAD_PINS[][4] {
+static const uint8_t PAD_PINS[][4] {
   {},
   {ENCL2A, ENCL1B, ENCL1A, SWL},
   {TOUCH, ENC1B, ENC1A, SWM}, // TODO: check version 3
   {ENCR1B, ENCR1A, ENCR2A, SWR}
 };
 #endif
+#endif
 
-static const byte BUTTON_MATRIX_INPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_INPUTS] = {
-    {
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_MATRIX)
+// TODO: create a button matrix with LED support?
+static const uint8_t MATRIX_OUTPUTS = 3;
+static const uint8_t MATRIX_INPUTS = 3;
+static const uint8_t MAX_MATRIX_BOARD_COUNT = 2;
+
+static const uint8_t BUTTON_MATRIX_INPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_INPUTS] = {
+  {
     ENCL2B,
     ENCL2A,
     SWL
@@ -102,15 +262,23 @@ static const byte BUTTON_MATRIX_INPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_INPUTS
   {
     ENCR1B,
     ENCR1A,
+#if PCB_VERSION == 3 
+    LEDR // TODO: check that this is the correct pin
+#else
     LED2
+#endif
   }
 };
 
-static const byte BUTTON_MATRIX_OUTPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_OUTPUTS] = {
+static const uint8_t BUTTON_MATRIX_OUTPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_OUTPUTS] = {
   {
     ENCL1B,
     ENCL1A,
-    LED1
+#if PCB_VERSION == 3 
+    LEDL // TODO: check that this is the correct pin
+#else
+    LED1 // TODO: Which pin should this be? Jumper missing on board?
+#endif
   },
   {
     ENCR2B,
@@ -118,32 +286,11 @@ static const byte BUTTON_MATRIX_OUTPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_OUTPU
     SWR
   }
 };
-
-#define HAS_FEATURE(BOARD, feature) (BOARD_FEATURES_##BOARD & feature)
-#define HAS_PADS(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_PADS))
-#define HAS_POT(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_POT))
-#define HAS_BUTTON(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_BUTTON))
-#define HAS_TOUCH(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_TOUCH))
-#define HAS_LED(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_LED))
-#define HAS_MATRIX(BOARD) (HAS_FEATURE(BOARD, BOARD_FEATURE_MATRIX))
-
-#if PCB_VERSION == 3
-#define ANY_BOARD_HAS_FEATURE(FEATURE) (HAS_FEATURE(L2, FEATURE) || HAS_FEATURE(L1, FEATURE) || HAS_FEATURE(M1, FEATURE) || HAS_FEATURE(M2, FEATURE) || HAS_FEATURE(R1, FEATURE) || HAS_FEATURE(R2, FEATURE))
-#else
-#define ANY_BOARD_HAS_FEATURE(FEATURE) (HAS_FEATURE(L2, FEATURE) || HAS_FEATURE(L1, FEATURE) || HAS_FEATURE(M, FEATURE) || HAS_FEATURE(R1, FEATURE) || HAS_FEATURE(R2, FEATURE))
 #endif
-
-#define TICK_BOARD(BOARD_ID) \
-if (HAS_FEATURE(BOARD_ID, BOARD_FEATURE_ENCODER)) {\
-  (*encoders[BOARD_##BOARD_ID]).tick();\
-}
-
-struct ButtonPairStates {
-  bool firstButtonState;
-  bool secondButtonState;
-};
 
 #if PCB_VERSION == 3
 #define BOARD_HAS_DEBUG_LED
 #endif
+
+extern Slave_ Slave;
 #endif
