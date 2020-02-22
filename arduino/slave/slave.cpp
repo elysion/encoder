@@ -464,8 +464,6 @@ inline void Slave_::setupI2c() {
   Serial.println(address);
   
  if (address == 255 || address < 10) {
-    Serial.print("A: ");
-    Serial.println(address);
     Serial.println("Req addr from master");
     Wire.begin();
     Wire.requestFrom(1, 1);
