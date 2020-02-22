@@ -312,29 +312,29 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 #define SWR (25)
 #define SWITCH_PORT (PINC)
 #elif PCB_VERSION == 3
-#define ENCM1A (32)
-#define ENCM1B (1)
-#define ENCM2A (7)
-#define ENCM2B (8)
+#define ENCM1A (9)
+#define ENCM1B (10)
+#define ENCM2A (12)
+#define ENCM2B (13)
 #define ENCL1A (23)
 #define ENCL1B (24)
 #define ENCL2A (31)
 #define ENCL2B (30)
-#define ENCR1A (9)
-#define ENCR1B (10)
-#define ENCR2A (12)
-#define ENCR2B (13)
-#define SWM (26)
+#define ENCR1A (2)
+#define ENCR1B (1)
+#define ENCR2A (7)
+#define ENCR2B (8)
+#define SWM (19)
 #define SWL (22)
-#define SWR (19)
+#define SWR (26)
 #endif
 
 #define TOUCH (11)
 
 #if PCB_VERSION == 3
 #define LEDL (25)
-#define LEDM (2)
-#define LEDR (11)
+#define LEDM (11)
+#define LEDR (32)
 #else
 #if PCB_VERSION == 1
 #define LED1 (24)
