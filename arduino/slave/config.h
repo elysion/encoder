@@ -26,6 +26,17 @@ static const byte ENCODER_TYPES[] = {
   ENCODER_TYPE_ABSOLUTE
 };
 
+static const byte ENCODER_POSITION_LIMITS[] = {
+  0, 11,
+  0, 11,
+#if PCB_VERSION == 3
+  0, 11,
+#endif
+  0, 11,
+  0, 11,
+  0, 11
+};
+
 #if PCB_VERSION == 3
 static const int LED_COUNT_L = LED_COUNTS[BOARD_L2] + LED_COUNTS[BOARD_L1];
 static const int LED_COUNT_M = LED_COUNTS[BOARD_M1] + LED_COUNTS[BOARD_M2];
