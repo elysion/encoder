@@ -1,3 +1,6 @@
+#ifndef __SHARED__
+#define __SHARED__
+
 enum ControlType {
   CONTROL_TYPE_DEBUG,
   CONTROL_TYPE_ENCODER,
@@ -11,3 +14,5 @@ enum DebugMessage {
   DEBUG_BOOT,
   DEBUG_RECEIVED_ADDRESS
 };
+
+#endif __SHARED__
