@@ -84,7 +84,7 @@ private:
   ChangeHandler handler;
   Adafruit_NeoPixel* leds[3];
   
-  volatile int address;
+  volatile uint8_t address;
 
   uint8_t switchStates;
   uint8_t previousSwitchStates;
