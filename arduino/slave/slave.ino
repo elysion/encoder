@@ -51,7 +51,7 @@ void handleChange(Board board, ControlType type, uint8_t input, uint8_t state) {
 //      handleButtonChange(boardMatrixIndex * MATRIX_INPUTS * MATRIX_OUTPUTS + MATRIX_INPUTS * output + input, currentState);
 //      handleButtonChange(i, (switchStates & switchMask) ? 0 : 1);
 //      handleButtonChange(i, pinState);
-      sendChangeMessage(board, state, type);
+      sendChangeMessage(board * 20 + input, state, type);
     }
     default:
       sendChangeMessage(board, state, type);
