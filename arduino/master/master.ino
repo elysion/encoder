@@ -67,20 +67,29 @@ void sendAddress() {
   Serial.println(nextAddress);
 }
 
+SlaveToMasterMessage readMessage() {
+  byte address = Wire.read();
+  byte input = Wire.read();
+  byte type = Wire.read();
+  byte valueHighByte = Wire.read();
+  byte valueLowByte = Wire.read();
+
+  SlaveToMasterMessage message = {address, input, type, word(valueHighByte, valueLowByte)};
+  return message;
+}
+
 void handleControlChange() {
   toggleRxLed();
   Serial.println("Received event:");
-  byte address = Wire.read();
-  byte control = Wire.read();
-  byte type = Wire.read();
-  byte value = Wire.read();
+
+  SlaveToMasterMessage message = readMessage();
 
   Serial.print("Address: ");
-  Serial.print(address);
+  Serial.print(message.address);
   Serial.print(", Control: ");
-  Serial.print(control);
+  Serial.print(message.control);
   Serial.print(", Type: ");
-  Serial.print(type);
+  Serial.print(message.type);
   Serial.print(", Value: ");
-  Serial.println(value);
+  Serial.println(message.value);
 }

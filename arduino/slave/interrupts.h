@@ -9,7 +9,7 @@ if (HAS_FEATURE(BOARD_ID, BOARD_FEATURE_ENCODER)) {\
   Slave.tickEncoder(BOARD_##BOARD_ID);\
 }
 
-// !!NOTE!!: Do not call sendMessage in ISRs
+// !!NOTE!!: Do not call sendChangeMessage in ISRs
 ISR(PCINT0_vect) {
 // TODO: where to put interrupter?
 //#if defined(USART_DEBUG_ENABLED) && defined(INTERRUPT_DEBUG)
@@ -32,7 +32,7 @@ ISR(PCINT0_vect) {
 #endif
 }
 
-// !!NOTE!!: Do not call sendMessage in ISRs
+// !!NOTE!!: Do not call sendChangeMessage in ISRs
 ISR(PCINT1_vect) {
 // TODO: where to put interrupter?
 //#if defined(USART_DEBUG_ENABLED) && defined(INTERRUPT_DEBUG)
@@ -64,7 +64,7 @@ ISR(PCINT1_vect) {
 #endif
 }
 
-// !!NOTE!!: Do not call sendMessage in ISRs
+// !!NOTE!!: Do not call sendChangeMessage in ISRs
 ISR(PCINT2_vect) {
 // TODO: where to put interrupter?
 //#if defined(USART_DEBUG_ENABLED) && defined(INTERRUPT_DEBUG)

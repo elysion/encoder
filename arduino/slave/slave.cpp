@@ -87,13 +87,13 @@ void Slave_::update() {
   #ifdef PORT_STATE_DEBUG
   uint8_t maskedPinC = PINC; // & 0x00001111;
   if (previousB != PINB) {
-    sendMessage(1, PINB, 100);
+    sendMessageToMaster(1, PINB, 100);
   }
   if (previousC != maskedPinC) {
-    sendMessage(2, PINC, 100);
+    sendMessageToMaster(2, PINC, 100);
   }
   if (previousD != PIND) {
-    sendMessage(3, PIND, 100);
+    sendMessageToMaster(3, PIND, 100);
   }
 
   previousB = PINB;
@@ -286,11 +286,15 @@ void Slave_::update() {
   #endif
 }
 
-void Slave_::sendMessage(uint8_t input, uint8_t value, ControlType type) {
-  toggleBuiltinLed();
+void Slave_::sendMessageToMaster(byte input, uint16_t value, ControlType type) {
+  SlaveToMasterMessage message = {address, input, type, value};
+  sendMessageToMaster(message);
+}
+
+void Slave_::sendMessageToMaster(SlaveToMasterMessage& message) {
   Wire.beginTransmission(1);
-  uint8_t message[] = {address, input, type, value};
-  Wire.write(message, 4);
+  byte data[] = {address, message.input, (byte)message.type, highByte(message.value), lowByte(message.value)};
+  Wire.write(data, SlaveToMasterMessageSize);
   Wire.endTransmission();
 }
 
@@ -411,7 +415,7 @@ inline void Slave_::setupPinModes() {
         digitalWrite(pin, HIGH);
       }
       for (uint8_t input = 0; input < MATRIX_INPUTS; ++input) {
-        sendMessage(DEBUG_BOOT + 2, BOARD_MATRIX_INDEX(i), input);
+        sendMessageToMaster(DEBUG_BOOT + 2, BOARD_MATRIX_INDEX(i), input);
         pinMode(BUTTON_MATRIX_INPUT_PINS[BOARD_MATRIX_INDEX(i)][input], INPUT_PULLUP);
       }
     }
@@ -486,10 +490,10 @@ inline void Slave_::setupI2c() {
     EEPROM.write(0, address);
   
     delay(900);
-    sendMessage(DEBUG_RECEIVED_ADDRESS, address, CONTROL_TYPE_DEBUG);
+    sendMessageToMaster(DEBUG_RECEIVED_ADDRESS, address, CONTROL_TYPE_DEBUG);
   } else {
     Wire.begin(address);
-    sendMessage(DEBUG_BOOT, 1, CONTROL_TYPE_DEBUG);
+    sendMessageToMaster(DEBUG_BOOT, 1, CONTROL_TYPE_DEBUG);
   }
 
   Serial.println("Done");

@@ -15,4 +15,12 @@ enum DebugMessage {
   DEBUG_RECEIVED_ADDRESS
 };
 
+const uint8_t SlaveToMasterMessageSize = 5;
+struct SlaveToMasterMessage {
+  uint8_t address;
+  uint8_t input;
+  ControlType type;
+  uint16_t value;
+};
+
 #endif __SHARED__

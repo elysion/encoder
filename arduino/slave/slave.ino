@@ -15,6 +15,11 @@ void setLedPosition(Board board, byte position) {
   Slave.showLeds(board);
 }
 
+void sendChangeMessage(byte input, uint16_t value, ControlType type) {
+  Slave.toggleBuiltinLed();
+  Slave.sendMessageToMaster(input, value, type);
+}
+
 void handleChange(Board board, ControlType type, uint8_t input, uint8_t state) {
   switch (type) {
     // TODO: prevent input collisions on different boards
@@ -27,7 +32,7 @@ void handleChange(Board board, ControlType type, uint8_t input, uint8_t state) {
         Serial.print(", pos: ");
         Serial.println(state);
       #endif
-      Slave.sendMessage(board, state, type);
+      sendChangeMessage(board, state, type);
       setLedPosition(board, state);
 
       break;
@@ -39,17 +44,17 @@ void handleChange(Board board, ControlType type, uint8_t input, uint8_t state) {
         Serial.print(", state: ");
         Serial.println(state);
       #endif
-      Slave.sendMessage(board, state, type);
+      sendChangeMessage(board, state, type);
       break;
     }
     case CONTROL_TYPE_BUTTON: {
 //      handleButtonChange(boardMatrixIndex * MATRIX_INPUTS * MATRIX_OUTPUTS + MATRIX_INPUTS * output + input, currentState);
 //      handleButtonChange(i, (switchStates & switchMask) ? 0 : 1);
 //      handleButtonChange(i, pinState);
-      Slave.sendMessage(board, state, type);
+      sendChangeMessage(board, state, type);
     }
     default:
-      Slave.sendMessage(board, state, type);
+      sendChangeMessage(board, state, type);
   }
 }
 
