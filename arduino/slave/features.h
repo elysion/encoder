@@ -1,5 +1,5 @@
-#ifndef __FEATURES__
-#define __FEATURES__
+#ifndef FEATURES_H
+#define FEATURES_H
 
 #include "avr/io.h"
 
@@ -26,4 +26,4 @@
 #define ANY_BOARD_HAS_FEATURE(FEATURE) (HAS_FEATURE(L2, FEATURE) || HAS_FEATURE(L1, FEATURE) || HAS_FEATURE(M, FEATURE) || HAS_FEATURE(R1, FEATURE) || HAS_FEATURE(R2, FEATURE))
 #endif
 
-#endif //__FEATURES__
+#endif //FEATURES_H

@@ -1,5 +1,5 @@
-#ifndef __TYPES__
-#define __TYPES__
+#ifndef TYPES_H
+#define TYPES_H
 
 enum EncoderType {
   ENCODER_TYPE_RELATIVE,
@@ -19,4 +19,4 @@ enum Board {
   BOARD_R2
 };
 
-#endif //__TYPES__
+#endif //TYPES_H

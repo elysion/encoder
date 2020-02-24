@@ -1,5 +1,5 @@
-#ifndef __SHARED__
-#define __SHARED__
+#ifndef SHARED_H
+#define SHARED_H
 
 enum ControlType {
   CONTROL_TYPE_DEBUG,
@@ -23,4 +23,4 @@ struct SlaveToMasterMessage {
   uint16_t value;
 };
 
-#endif __SHARED__
+#endif // SHARED_H

@@ -1,5 +1,5 @@
-#ifndef __INTERRUPTS__
-#define __INTERRUPTS__
+#ifndef INTERRUPTS_H
+#define INTERRUPTS_H
 
 #include "slave.h"
 #include "config.h"
@@ -99,4 +99,4 @@ ISR(PCINT2_vect) {
 #endif
 }
 
-#endif // __INTERRUPTS__
+#endif // INTERRUPTS_H
