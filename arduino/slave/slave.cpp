@@ -461,6 +461,25 @@ inline void Slave_::setupPinModes() {
   }
 }
 
+inline uint8_t Slave_::requestAddress() {
+  Wire.requestFrom(1, 1);
+  uint8_t receivedAddress = 255;
+
+  while (Wire.available()) {
+    receivedAddress = Wire.read();
+    Serial.print("Got addr: ");
+    Serial.println(address);
+  }
+
+  if (address == 255) {
+    Serial.println("Did not get addr. Reset.");
+    delay(1000);
+    reset();
+  }
+
+  return receivedAddress;
+}
+
 inline void Slave_::setupI2c() {
   address = EEPROM.read(0);
   Serial.println("Boot");
@@ -470,18 +489,7 @@ inline void Slave_::setupI2c() {
  if (address == 255 || address < 10) {
     Serial.println("Req addr from master");
     Wire.begin();
-    Wire.requestFrom(1, 1);
-    while (Wire.available()) {
-      address = Wire.read();
-      Serial.print("Got addr: ");
-      Serial.println(address);
-    }
-
-    if (address == 255) {
-      Serial.println("Did not get addr. Reset.");
-      delay(1000);
-      reset();
-    }
+    address = requestAddress();
   
     Serial.print("Start w/ addr: ");
     Serial.println(address);

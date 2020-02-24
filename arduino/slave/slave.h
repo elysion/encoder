@@ -69,6 +69,7 @@ private:
   inline uint8_t readPadPin(uint8_t board, uint8_t pin);
   void handleButtonChange(uint8_t input, uint8_t state); // TODO make this customizable
   void handlePositionChange(uint8_t input, uint8_t state); // TODO make this customizable
+  uint8_t requestAddress();
   void sendMessageToMaster(SlaveToMasterMessage& message);
 
   #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
