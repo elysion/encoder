@@ -19,4 +19,9 @@ enum Board {
   BOARD_R2
 };
 
+enum EncoderDirection {
+  ENCODE_DIRECTION_CW = 1,
+  ENCODE_DIRECTION_CCW = -1
+};
+
 #endif //TYPES_H

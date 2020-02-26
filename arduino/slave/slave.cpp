@@ -227,13 +227,14 @@ void Slave_::update() {
   for (int i = 0; i < BOARD_COUNT; ++i) {
     int position;
     uint8_t positionChanged = false;
+    const int8_t directionMultiplier = (int8_t) ENCODER_DIRECTIONS[i];
     
     if (BOARD_FEATURES[i] & BOARD_FEATURE_ENCODER) {
       if (ENCODER_TYPES[i] == ENCODER_TYPE_ABSOLUTE) {
-        position = (*(encoders)[i]).getPosition();
+        position = (*(encoders)[i]).getPosition() * directionMultiplier;
         positionChanged = position != positions[i];
       } else {
-        position = (*(encoders)[i]).getDirection();
+        position = (*(encoders)[i]).getDirection() * directionMultiplier;
         positionChanged = position != 0;
       }
       
@@ -269,7 +270,7 @@ void Slave_::update() {
         int limited = constrain(position, ENCODER_POSITION_LIMITS[i*2], ENCODER_POSITION_LIMITS[i*2+1]);
         positions[i] = limited;
         if (position != limited) {
-          (*(encoders)[i]).setPosition(limited);
+          (*(encoders)[i]).setPosition(limited * directionMultiplier);
         }
         handler((Board)i, CONTROL_TYPE_POSITION, 0, constrain(position, ENCODER_POSITION_LIMITS[i*2], ENCODER_POSITION_LIMITS[i*2+1]));
       } else {
