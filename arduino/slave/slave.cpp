@@ -147,7 +147,7 @@ void Slave_::update() {
       #if PCB_VERSION == 3
       for (uint8_t board = BOARD_L2; board <= BOARD_R2; ++board) {
         if (changed & (1 << board)) {
-          handler(board, CONTROL_TYPE_BUTTON, 0, switchStates & (1 << board) ? 0 : 1);
+          handler((Board)board, CONTROL_TYPE_BUTTON, 0, switchStates & (1 << board) ? 0 : 1);
         }
       }
       #else
@@ -271,9 +271,9 @@ void Slave_::update() {
         if (position != limited) {
           (*(encoders)[i]).setPosition(limited);
         }
-        handler(i, CONTROL_TYPE_POSITION, 0, constrain(position, ENCODER_POSITION_LIMITS[i*2], ENCODER_POSITION_LIMITS[i*2+1]));
+        handler((Board)i, CONTROL_TYPE_POSITION, 0, constrain(position, ENCODER_POSITION_LIMITS[i*2], ENCODER_POSITION_LIMITS[i*2+1]));
       } else {
-        handler(i, CONTROL_TYPE_ENCODER, 0, position);
+        handler((Board)i, CONTROL_TYPE_ENCODER, 0, position);
       }
     }
   }
@@ -599,7 +599,7 @@ void Slave_::setLedColor(Board board, uint16_t position, uint16_t color) {
   ledsForBoard(board)->setPixelColor(position, color);
 }
 
-void Slave_::fillLeds(Board board, uint16_t color, uint16_t first = 0, uint16_t count = 0) {
+void Slave_::fillLeds(Board board, uint16_t color, uint16_t first, uint16_t count) {
   ledsForBoard(board)->fill(color, first, count);
 }
 
@@ -623,6 +623,13 @@ Adafruit_NeoPixel* Slave_::ledsForBoard(Board board) {
     case BOARD_R2:
       return leds[2];
   }
+  
+  #ifdef USART_DEBUG_ENABLED
+  Serial.print("Unknown board: ");
+  Serial.println(board);
+  #endif
+  reset();
+  return 0;
 }
 
 #endif
