@@ -38,12 +38,12 @@ static const EncoderDirection ENCODER_DIRECTIONS[] = {
 };
 
 static const byte ENCODER_POSITION_LIMITS[] = {
-  0, 11,
-  0, 11,
+  0, 3,
+  0, 3,
 #if PCB_VERSION == 3
-  0, 11,
+  0, 3,
 #endif
-  0, 11,
+  0, 3,
   0, 11,
   0, 11
 };
