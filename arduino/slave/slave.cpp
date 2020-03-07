@@ -466,11 +466,11 @@ inline uint8_t Slave_::requestAddress() {
   Wire.requestFrom(1, 1);
   uint8_t receivedAddress = 255;
 
-  while (Wire.available()) {
-    receivedAddress = Wire.read();
-    Serial.print("Got addr: ");
-    Serial.println(address);
-  }
+  while (!Wire.available()) {}
+
+  receivedAddress = Wire.read();
+  Serial.print("Got addr: ");
+  Serial.println(receivedAddress);
 
   if (address == 255) {
     Serial.println("Did not get addr. Reset.");
