@@ -82,7 +82,7 @@ void setup() {
 
 void loop() {
   Slave.update();
-  
+
   #ifdef BOARD_HAS_DEBUG_LED
   blinkTimer.run();
   #endif

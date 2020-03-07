@@ -83,12 +83,12 @@ private:
 
   ChangeHandler handler;
   Adafruit_NeoPixel* leds[3];
-  
+
   volatile uint8_t address;
 
   uint8_t switchStates;
   uint8_t previousSwitchStates;
-  
+
   #if PCB_VERSION != 3 // TODO
   uint8_t touchStates;
   uint8_t previousTouchStates;
@@ -148,7 +148,7 @@ private:
     0
     #endif
   #endif
-    
+
     ,
     #if BOARD_FEATURES_R1 & BOARD_FEATURE_ENCODER
     new RotaryEncoder(ENCODER_PINS[BOARD_R1][0], ENCODER_PINS[BOARD_R1][1])
@@ -162,28 +162,28 @@ private:
     0
     #endif
   };
-  
+
   int positions[BOARD_COUNT]  = {
-    0, 
+    0,
     0,
     0,
   #if PCB_VERSION == 3
     0,
   #endif
-    0, 
+    0,
     0
   };
   #endif
 
   #ifdef ENCODER_PIN_DEBUG_ENABLED
   uint8_t states[BOARD_COUNT*2] = {
-    LOW, LOW, 
+    LOW, LOW,
     LOW, LOW,
     LOW, LOW,
   #if PCB_VERSION == 3
     LOW, LOW,
   #endif
-    LOW, LOW, 
+    LOW, LOW,
     LOW, LOW
   };
   #endif
@@ -264,7 +264,7 @@ static const uint8_t BUTTON_MATRIX_INPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_INP
   {
     ENCR1B,
     ENCR1A,
-#if PCB_VERSION == 3 
+#if PCB_VERSION == 3
     LEDR // TODO: check that this is the correct pin
 #else
     LED2
@@ -276,7 +276,7 @@ static const uint8_t BUTTON_MATRIX_OUTPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_OU
   {
     ENCL1B,
     ENCL1A,
-#if PCB_VERSION == 3 
+#if PCB_VERSION == 3
     LEDL // TODO: check that this is the correct pin
 #else
     LED1 // TODO: Which pin should this be? Jumper missing on board?

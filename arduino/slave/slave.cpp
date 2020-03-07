@@ -63,7 +63,7 @@ void Slave_::setup(ChangeHandler changeHandler) {
   leds[2] = new Adafruit_NeoPixel(LED_COUNT_R, LEDR, NEO_GRB + NEO_KHZ800);
   leds[2]->begin();
 #endif
-  
+
   if (LED_BUILTIN_AVAILABLE) {
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
@@ -228,7 +228,7 @@ void Slave_::update() {
     int position;
     uint8_t positionChanged = false;
     const int8_t directionMultiplier = (int8_t) ENCODER_DIRECTIONS[i];
-    
+
     if (BOARD_FEATURES[i] & BOARD_FEATURE_ENCODER) {
       if (ENCODER_TYPES[i] == ENCODER_TYPE_ABSOLUTE) {
         position = (*(encoders)[i]).getPosition() * directionMultiplier;
@@ -237,11 +237,11 @@ void Slave_::update() {
         position = (*(encoders)[i]).getDirection() * directionMultiplier;
         positionChanged = position != 0;
       }
-      
+
 #if defined(USART_DEBUG_ENABLED) && defined(INTERRUPT_DEBUG)
       uint8_t stateA = digitalRead(ENCODER_PINS[i][0]);
       uint8_t stateB = digitalRead(ENCODER_PINS[i][1]);
-  
+
       if (stateA != states[2*i] || stateB != states[2*i+1]) {
         Serial.print("Int: ");
         Serial.println(interrupter);
@@ -264,8 +264,8 @@ void Slave_::update() {
     } else {
       continue;
     }
-    
-    if (positionChanged) {      
+
+    if (positionChanged) {
       if (ENCODER_TYPES[i] == ENCODER_TYPE_ABSOLUTE) {
         int limited = constrain(position, ENCODER_POSITION_LIMITS[i*2], ENCODER_POSITION_LIMITS[i*2+1]);
         positions[i] = limited;
@@ -342,12 +342,12 @@ inline void Slave_::setupInterrupts() {
     enablePCINT(ENCR1A);
     enablePCINT(ENCR1B);
   }
-  
+
   if (BOARD_FEATURES[BOARD_R2] & BOARD_FEATURE_ENCODER) {
     enablePCINT(ENCR2A);
     enablePCINT(ENCR2B);
   }
-  
+
 #if PCB_VERSION != 3 // v3 does not have a PCINT on SWL :(
   if (BOARD_FEATURES[BOARD_L1] & (BOARD_FEATURE_BUTTON | BOARD_FEATURE_TOUCH)) {
     enablePCINT(SWL);
@@ -387,7 +387,7 @@ inline void Slave_::setupInterrupts() {
     enablePCINT(ENC1A);
     enablePCINT(TOUCH); // TODO: fix  POT -> TOUCH on board
   }
-  
+
   if (BOARD_FEATURES[BOARD_R1] & BOARD_FEATURE_PADS) {
     enablePCINT(ENCR1A);
     enablePCINT(ENCR1B);
@@ -428,7 +428,7 @@ inline void Slave_::setupPinModes() {
       pinMode(BUTTON_PINS[i], INPUT);
 #else
       pinMode(BUTTON_PINS[i], INPUT_PULLUP);
-#endif      
+#endif
     }
 #endif
 
@@ -456,7 +456,7 @@ inline void Slave_::setupPinModes() {
         #endif
         pinMode(PAD_PINS[i][j], INPUT_PULLUP);
       }
-    } 
+    }
 #endif
 #endif
   }
@@ -503,7 +503,7 @@ inline void Slave_::setupI2c() {
     Wire.begin(address);
 
     EEPROM.write(0, address);
-  
+
     delay(900);
     sendMessageToMaster(DEBUG_RECEIVED_ADDRESS, address, CONTROL_TYPE_DEBUG);
   } else {
@@ -638,7 +638,7 @@ Adafruit_NeoPixel* Slave_::ledsForBoard(Board board) {
     case BOARD_R2:
       return leds[2];
   }
-  
+
   #ifdef USART_DEBUG_ENABLED
   Serial.print("Unknown board: ");
   Serial.println(board);
