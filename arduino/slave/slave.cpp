@@ -354,11 +354,7 @@ inline void Slave_::setupInterrupts() {
   }
 #endif
 
-#if PCB_VERSION == 3
-  if (BOARD_FEATURES[BOARD_M1] & BOARD_FEATURE_BUTTON || BOARD_FEATURES[BOARD_M2] & BOARD_FEATURE_BUTTON) {
-    enablePCINT(SWM);
-  }
-#else
+#if PCB_VERSION != 3 // v3 does not have a PCINT on SWM :(
   if (BOARD_FEATURES[BOARD_M] & BOARD_FEATURE_BUTTON) {
     enablePCINT(SWM);
   }
@@ -367,11 +363,9 @@ inline void Slave_::setupInterrupts() {
   }
 #endif
 
-#if PCB_VERSION != 3 // v3 does not have a PCINT on SWR :(
-  if (BOARD_FEATURES[BOARD_R1] & (BOARD_FEATURE_BUTTON | BOARD_FEATURE_TOUCH)) {
-    enablePCINT(SWR);
-  }
-#endif
+if (BOARD_FEATURES[BOARD_R1] & (BOARD_FEATURE_BUTTON | BOARD_FEATURE_TOUCH)) {
+  enablePCINT(SWR);
+}
 
 #if PCB_VERSION != 3 // TODO
   if (BOARD_FEATURES[BOARD_L1] & BOARD_FEATURE_PADS) {
