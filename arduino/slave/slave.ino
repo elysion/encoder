@@ -66,7 +66,9 @@ MillisTimer blinkTimer = MillisTimer(1000, blinkBuiltinLed);
 #endif
 
 void setup() {
+  #ifdef USART_DEBUG_ENABLED
   Serial.begin(115200);
+  #endif
   Slave.setup(handleChange);
   #ifdef BOARD_HAS_DEBUG_LED
   blinkTimer.start();

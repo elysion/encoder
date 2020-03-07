@@ -483,17 +483,23 @@ inline uint8_t Slave_::requestAddress() {
 
 inline void Slave_::setupI2c() {
   address = EEPROM.read(0);
+  #ifdef USART_DEBUG_ENABLED
   Serial.println("Boot");
   Serial.print("A: ");
   Serial.println(address);
-  
+  #endif
+
  if (address == 255 || address < 10) {
+    #ifdef USART_DEBUG_ENABLED
     Serial.println("Req addr from master");
+    #endif
     Wire.begin();
     address = requestAddress();
-  
+
+    #ifdef USART_DEBUG_ENABLED
     Serial.print("Start w/ addr: ");
     Serial.println(address);
+    #endif
     Wire.begin(address);
 
     EEPROM.write(0, address);
@@ -505,15 +511,19 @@ inline void Slave_::setupI2c() {
     sendMessageToMaster(DEBUG_BOOT, 1, CONTROL_TYPE_DEBUG);
   }
 
+  #ifdef USART_DEBUG_ENABLED
   Serial.println("Done");
+  #endif
 }
 
 #if PCB_VERSION != 3 // TODO
 inline uint8_t Slave_::readPadPin(uint8_t board, uint8_t pin) {
+  #ifdef USART_DEBUG_ENABLED
   Serial.print("Read: ");
   Serial.println(PAD_PINS[board][pin]);
   Serial.print("Val: ");
   Serial.println(digitalRead(PAD_PINS[board][pin]));
+  #endif
   return (digitalRead(PAD_PINS[board][pin]) == LOW ? 0 : 1) << pin;
 }
 
