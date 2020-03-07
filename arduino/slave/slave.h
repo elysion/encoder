@@ -19,8 +19,8 @@ struct ButtonPairStates {
 };
 
 static const uint8_t ENCODER_PINS[BOARD_COUNT][2] = {
-  {ENCL2A, ENCL2B},
   {ENCL1A, ENCL1B},
+  {ENCL2A, ENCL2B},
 #if PCB_VERSION == 3
   {ENCM1A, ENCM1B},
   {ENCM2A, ENCM2B},
@@ -117,14 +117,14 @@ private:
 
   #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_ENCODER)
   RotaryEncoder* encoders[BOARD_COUNT] = {
-  #if BOARD_FEATURES_L2 & BOARD_FEATURE_ENCODER
-  new RotaryEncoder(ENCODER_PINS[BOARD_L2][0], ENCODER_PINS[BOARD_L2][1])
+  #if BOARD_FEATURES_L1 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_L1][0], ENCODER_PINS[BOARD_L1][1])
   #else
   0
   #endif
   ,
-  #if BOARD_FEATURES_L1 & BOARD_FEATURE_ENCODER
-  new RotaryEncoder(ENCODER_PINS[BOARD_L1][0], ENCODER_PINS[BOARD_L1][1])
+  #if BOARD_FEATURES_L2 & BOARD_FEATURE_ENCODER
+  new RotaryEncoder(ENCODER_PINS[BOARD_L2][0], ENCODER_PINS[BOARD_L2][1])
   #else
   0
   #endif
@@ -208,8 +208,8 @@ static const uint8_t BUTTON_PINS[] = {
 };
 #else
 static const uint8_t BUTTON_PINS[] = {
-  NOT_POSSIBLE,
   SWL,
+  NOT_POSSIBLE,
   SWM,
   SWR
 };
@@ -221,8 +221,8 @@ static const uint8_t POT_CHANGE_THRESHOLD = 5;
 
 #if PCB_VERSION != 3
 static const uint8_t POT_PINS[] = {
-  NOT_POSSIBLE,
   POTL,
+  NOT_POSSIBLE,
   POTM,
   POTR
 };
@@ -230,8 +230,8 @@ static const uint8_t POT_PINS[] = {
 
 #if PCB_VERSION != 3
 static const uint8_t TOUCH_PINS[] = {
-  NOT_POSSIBLE,
   ENCL2B,
+  NOT_POSSIBLE,
   TOUCH,
   ENCR2B
 };
@@ -241,8 +241,8 @@ static const uint8_t TOUCH_PINS[] = {
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
 #if PCB_VERSION != 3
 static const uint8_t PAD_PINS[][4] {
-  {},
   {ENCL2A, ENCL1B, ENCL1A, SWL},
+  {},
   {TOUCH, ENC1B, ENC1A, SWM}, // TODO: check version 3
   {ENCR1B, ENCR1A, ENCR2A, SWR}
 };

@@ -7,8 +7,8 @@ enum EncoderType {
 };
 
 enum Board {
-  BOARD_L2,
   BOARD_L1,
+  BOARD_L2,
 #if PCB_VERSION == 3
   BOARD_M1,
   BOARD_M2,
