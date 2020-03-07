@@ -52,15 +52,15 @@ void Slave_::setup(ChangeHandler changeHandler) {
   handler = changeHandler;
 
 #if HAS_FEATURE(L1, BOARD_FEATURE_LED) || HAS_FEATURE(L2, BOARD_FEATURE_LED)
-  leds[0] = new Adafruit_NeoPixel(12, LEDL, NEO_GRB + NEO_KHZ800);
+  leds[0] = new Adafruit_NeoPixel(LED_COUNT_L, LEDL, NEO_GRB + NEO_KHZ800);
   leds[0]->begin();
 #endif
 #if HAS_FEATURE(M1, BOARD_FEATURE_LED) || HAS_FEATURE(M2, BOARD_FEATURE_LED) || HAS_FEATURE(M, BOARD_FEATURE_LED)
-  leds[1] = new Adafruit_NeoPixel(12, LEDM, NEO_GRB + NEO_KHZ800);
+  leds[1] = new Adafruit_NeoPixel(LED_COUNT_M, LEDM, NEO_GRB + NEO_KHZ800);
   leds[1]->begin();
 #endif
 #if HAS_FEATURE(R1, BOARD_FEATURE_LED) || HAS_FEATURE(R2, BOARD_FEATURE_LED)
-  leds[2] = new Adafruit_NeoPixel(12, LEDR, NEO_GRB + NEO_KHZ800);
+  leds[2] = new Adafruit_NeoPixel(LED_COUNT_R, LEDR, NEO_GRB + NEO_KHZ800);
   leds[2]->begin();
 #endif
   
