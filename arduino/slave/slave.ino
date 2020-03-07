@@ -25,7 +25,7 @@ void handleChange(Board board, ControlType type, uint8_t input, uint8_t state) {
   switch (type) {
     // TODO: prevent input collisions on different boards
     case CONTROL_TYPE_POSITION: {
-      #if defined(USART_DEBUG_ENABLED)
+      #ifdef USART_DEBUG_ENABLED
         Serial.print("Pos change, board: ");
         Serial.print(board);
         Serial.print(", input: ");
@@ -39,7 +39,7 @@ void handleChange(Board board, ControlType type, uint8_t input, uint8_t state) {
       break;
     }
     case CONTROL_TYPE_ENCODER: {
-      #if defined(USART_DEBUG_ENABLED)
+      #ifdef USART_DEBUG_ENABLED
         Serial.print("handleEncoderChange, input: ");
         Serial.print(input);
         Serial.print(", state: ");
