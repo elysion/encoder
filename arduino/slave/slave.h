@@ -174,8 +174,8 @@ private:
     0
   };
   #endif
-  
-  #ifdef USART_DEBUG_ENABLED
+
+  #ifdef ENCODER_PIN_DEBUG_ENABLED
   uint8_t states[BOARD_COUNT*2] = {
     LOW, LOW, 
     LOW, LOW,
