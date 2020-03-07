@@ -5,14 +5,14 @@
 #include "types.h"
 
 static const byte LED_COUNTS[] = {
-  0,
-  12,
+  4,
+  4,
 #if PCB_VERSION == 3
-  12,
+  4,
 #endif
-  0,
+  4,
   12,
-  0
+  12
 };
 
 static const byte ENCODER_TYPES[] = {
