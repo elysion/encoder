@@ -82,7 +82,7 @@ private:
   #endif
 
   ChangeHandler handler;
-  Adafruit_NeoPixel* leds[3];
+  Adafruit_NeoPixel* leds[3] = {0,0,0};
 
   volatile uint8_t address;
 
