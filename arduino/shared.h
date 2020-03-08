@@ -23,4 +23,7 @@ struct SlaveToMasterMessage {
   uint16_t value;
 };
 
+const byte MASTER_ADDRESS = 1;
+const byte ADDRESS_LENGTH = 1;
+
 #endif // SHARED_H

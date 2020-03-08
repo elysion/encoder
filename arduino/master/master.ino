@@ -23,9 +23,9 @@ const byte I2C_TX_LED_PIN = 9;
 void setup() {
   nextAddress = EEPROM.read(0);
   nextAddress = nextAddress == 255 ? 0 : nextAddress;
-  
+
   Serial.begin(115200);
-  Wire.begin(1); // join i2c bus (address optional for master)
+  Wire.begin(MASTER_ADDRESS); // join i2c bus (address optional for master)
   Wire.onRequest(sendAddress);
   Wire.onReceive(handleControlChange);
 

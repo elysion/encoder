@@ -457,7 +457,7 @@ inline void Slave_::setupPinModes() {
 }
 
 inline uint8_t Slave_::requestAddress() {
-  Wire.requestFrom(1, 1);
+  Wire.requestFrom(MASTER_ADDRESS, ADDRESS_LENGTH);
   uint8_t receivedAddress = 255;
 
   while (!Wire.available()) {}
@@ -483,7 +483,7 @@ inline void Slave_::setupI2c() {
   Serial.println(address);
   #endif
 
- if (address == 255 || address < 10) {
+ if (address == 255 || address <= MASTER_ADDRESS) {
     #ifdef USART_DEBUG_ENABLED
     Serial.println("Req addr from master");
     #endif
