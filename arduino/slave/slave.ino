@@ -9,8 +9,8 @@
 
 void setLedPosition(Board board, byte position) {
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
-  uint32_t color = board < 2 ? Slave.Color(20, 0, 0) : board > 3 ? Slave.Color(0, 0, 20) : Slave.Color(0, 20, 0);
-  Slave.fillLeds(board, Slave.Color(1, 1, 1), 0, LED_COUNTS[board]);
+  uint32_t color = position < 4 ? Slave.Color(20, 0, 0) : position > 7 ? Slave.Color(0, 0, 20) : Slave.Color(0, 20, 0);
+  Slave.fillLeds(board, Slave.Color(0, 0, 0), 0, LED_COUNTS[board]);
   Slave.setLedColor(board, position, color);
   Slave.showLeds(board);
 #endif
