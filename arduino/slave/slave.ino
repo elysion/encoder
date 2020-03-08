@@ -7,12 +7,31 @@
 
 #include "feature_validation.h"
 
+Board firstBoardInLedChain(Board board) {
+  return (Board) (board - (board % 2));
+}
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
+inline uint32_t colorForPosition(uint8_t position) {
+  return position < 4 ? Slave.Color(20, 0, 0) : position > 7 ? Slave.Color(0, 0, 20) : Slave.Color(0, 20, 0);
+}
+#endif
+
+inline void setPositionLedOn(uint8_t position, Board board) {
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
+  const uint8_t firstIndex = board % 2 == 0 ? 0 : LED_COUNTS[board - 1];
+  Slave.setLedColor(position + firstIndex, colorForPosition(position));
+#endif
+}
+
 void setLedPosition(Board board, byte position) {
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
-  uint32_t color = position < 4 ? Slave.Color(20, 0, 0) : position > 7 ? Slave.Color(0, 0, 20) : Slave.Color(0, 20, 0);
-  Slave.fillLeds(board, Slave.Color(0, 0, 0), 0, LED_COUNTS[board]);
-  Slave.setLedColor(board, position, color);
-  Slave.showLeds(board);
+  Slave.initializeLedsForBoard(board);
+  Slave.fillLeds(Slave.Color(0, 0, 0), 0, Slave.ledCountForChain(board));
+  const Board firstBoard = firstBoardInLedChain(board);
+  setPositionLedOn(Slave.getPosition(firstBoard), firstBoard);
+  setPositionLedOn(Slave.getPosition(firstBoard+1), firstBoard+1);
+  Slave.showLeds();
 #endif
 }
 

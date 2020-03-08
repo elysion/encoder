@@ -43,6 +43,8 @@ public:
   void sendMessageToMaster(byte input, uint16_t value, ControlType type);
   void toggleBuiltinLed();
   void tickEncoder(Board board);
+  int getPosition(Board board);
+  uint8_t ledCountForChain(Board board);
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   void updateSwitchStates();
 #endif
@@ -50,9 +52,10 @@ public:
   void updatePadStates();
 #endif
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
-  void setLedColor(Board board, uint16_t position, uint32_t color);
-  void fillLeds(Board board, uint32_t color, uint16_t first = 0, uint16_t count = 0);
-  void showLeds(Board board);
+  void initializeLedsForBoard(Board board);
+  void setLedColor(uint16_t position, uint32_t color);
+  void fillLeds(uint32_t color, uint16_t first = 0, uint16_t count = 0);
+  void showLeds();
 
   static uint32_t Color(uint8_t r, uint8_t g, uint8_t b) {
     return Adafruit_NeoPixel::Color(r, g, b);
@@ -69,9 +72,9 @@ private:
   uint8_t requestAddress();
   void sendMessageToMaster(SlaveToMasterMessage& message);
 
-  #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
-  Adafruit_NeoPixel* ledsForBoard(Board board);
-  #endif
+  uint8_t ledCountForBoard(Board board);
+  uint8_t ledPinForBoard(Board board);
+  uint8_t firstLedIndex(Board board);
 
   #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   ButtonPairStates voltageToButtonStates(int voltage);
@@ -79,7 +82,9 @@ private:
   #endif
 
   ChangeHandler handler;
-  Adafruit_NeoPixel* leds[3] = {0,0,0};
+
+  uint8_t currentLedPin = 0;
+  Adafruit_NeoPixel *leds = 0;
 
   volatile uint8_t address;
 

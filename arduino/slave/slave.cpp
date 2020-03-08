@@ -51,19 +51,6 @@ Slave_::Slave_() {
 void Slave_::setup(ChangeHandler changeHandler) {
   handler = changeHandler;
 
-#if HAS_FEATURE(L1, BOARD_FEATURE_LED) || HAS_FEATURE(L2, BOARD_FEATURE_LED)
-  leds[0] = new Adafruit_NeoPixel(LED_COUNT_L, LEDL, NEO_GRB + NEO_KHZ800);
-  leds[0]->begin();
-#endif
-#if HAS_FEATURE(M1, BOARD_FEATURE_LED) || HAS_FEATURE(M2, BOARD_FEATURE_LED) || HAS_FEATURE(M, BOARD_FEATURE_LED)
-  leds[1] = new Adafruit_NeoPixel(LED_COUNT_M, LEDM, NEO_GRB + NEO_KHZ800);
-  leds[1]->begin();
-#endif
-#if HAS_FEATURE(R1, BOARD_FEATURE_LED) || HAS_FEATURE(R2, BOARD_FEATURE_LED)
-  leds[2] = new Adafruit_NeoPixel(LED_COUNT_R, LEDR, NEO_GRB + NEO_KHZ800);
-  leds[2]->begin();
-#endif
-
   if (LED_BUILTIN_AVAILABLE) {
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
@@ -304,6 +291,10 @@ void Slave_::toggleBuiltinLed() {
 
 void Slave_::tickEncoder(Board board) {
   (*(encoders)[board]).tick();
+}
+
+int Slave_::getPosition(Board board) {
+  return positions[board];
 }
 
 inline void Slave_::setupInterrupts() {
@@ -597,45 +588,58 @@ uint8_t Slave_::getButtonStates() {
 #endif
 
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
-inline uint8_t previousBoardLedCount(Board board) {
-  return (board % 2) == 1 ? LED_COUNTS[board - 1] : 0;
-}
 
-void Slave_::setLedColor(Board board, uint16_t position, uint32_t color) {
-  ledsForBoard(board)->setPixelColor(previousBoardLedCount(board) + position, color);
-}
-
-void Slave_::fillLeds(Board board, uint32_t color, uint16_t first, uint16_t count) {
-  ledsForBoard(board)->fill(color, previousBoardLedCount(board) + first, count);
-}
-
-void Slave_::showLeds(Board board) {
- ledsForBoard(board)->show();
-}
-
-Adafruit_NeoPixel* Slave_::ledsForBoard(Board board) {
+uint8_t Slave_::ledCountForChain(Board board) {
   switch (board) {
     case BOARD_L1:
     case BOARD_L2:
-      return leds[0];
-    #if PCB_VERSION == 3
+      return LED_COUNT_L;
+      // TODO: PCB v!=3
     case BOARD_M1:
     case BOARD_M2:
-    #else
-    case BOARD_M:
-    #endif
-      return leds[1];
+      return LED_COUNT_M;
     case BOARD_R1:
     case BOARD_R2:
-      return leds[2];
+      return LED_COUNT_R;
+    default:
+      return 0;
   }
+}
 
-  #ifdef USART_DEBUG_ENABLED
-  Serial.print("Unknown board: ");
-  Serial.println(board);
-  #endif
-  reset();
-  return 0;
+uint8_t Slave_::ledPinForBoard(Board board) {
+  switch (board) {
+    case BOARD_L1:
+    case BOARD_L2:
+      return LEDL;
+      // TODO: PCB v!=3
+    case BOARD_M1:
+    case BOARD_M2:
+      return LEDM;
+    case BOARD_R1:
+    case BOARD_R2:
+      return LEDR;
+    default:
+      return 0;
+  }
+}
+
+void Slave_::initializeLedsForBoard(Board board) {
+  uint8_t ledPin = ledPinForBoard(board);
+  delete leds;
+  leds = new Adafruit_NeoPixel(ledCountForChain(board), ledPin, NEO_GRB + NEO_KHZ800);
+  leds->begin();
+}
+
+void Slave_::setLedColor(uint16_t position, uint32_t color) {
+  leds->setPixelColor(position, color);
+}
+
+void Slave_::fillLeds(uint32_t color, uint16_t first, uint16_t count) {
+  leds->fill(color, first, count);
+}
+
+void Slave_::showLeds() {
+  leds->show();
 }
 
 #endif
