@@ -604,11 +604,11 @@ inline uint8_t previousBoardLedCount(Board board) {
   return (board % 2) == 1 ? LED_COUNTS[board - 1] : 0;
 }
 
-void Slave_::setLedColor(Board board, uint16_t position, uint16_t color) {
+void Slave_::setLedColor(Board board, uint16_t position, uint32_t color) {
   ledsForBoard(board)->setPixelColor(previousBoardLedCount(board) + position, color);
 }
 
-void Slave_::fillLeds(Board board, uint16_t color, uint16_t first, uint16_t count) {
+void Slave_::fillLeds(Board board, uint32_t color, uint16_t first, uint16_t count) {
   ledsForBoard(board)->fill(color, previousBoardLedCount(board) + first, count);
 }
 

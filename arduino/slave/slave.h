@@ -50,8 +50,8 @@ public:
   void updatePadStates();
 #endif
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
-  void setLedColor(Board board, uint16_t position, uint16_t color);
-  void fillLeds(Board board, uint16_t color, uint16_t first = 0, uint16_t count = 0);
+  void setLedColor(Board board, uint16_t position, uint32_t color);
+  void fillLeds(Board board, uint32_t color, uint16_t first = 0, uint16_t count = 0);
   void showLeds(Board board);
 
   static uint32_t Color(uint8_t r, uint8_t g, uint8_t b) {
