@@ -75,6 +75,9 @@ void setup() {
   blinkTimer.start();
   #endif
 
+  for (byte i = 0; i <= BOARD_R2; ++i) {
+    setLedPosition(i, 0);
+  }
 }
 
 void loop() {
