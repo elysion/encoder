@@ -84,7 +84,7 @@ void Slave_::setup(ChangeHandler changeHandler) {
 }
 
 void Slave_::update() {
-  #ifdef PORT_STATE_DEBUG
+#ifdef PORT_STATE_DEBUG
   uint8_t maskedPinC = PINC; // & 0x00001111;
   if (previousB != PINB) {
     sendMessageToMaster(1, PINB, 100);
