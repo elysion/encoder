@@ -24,7 +24,7 @@ inline void togglePin(uint8_t outputPin) {
   digitalWrite(outputPin, !digitalRead(outputPin));
 }
 
-bool isInRange(int value, int target, int range) {
+inline bool isInRange(int value, int target, int range) {
   return value > target - range && value < target + range;
 }
 
