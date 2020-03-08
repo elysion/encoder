@@ -75,9 +75,6 @@ void setup() {
   blinkTimer.start();
   #endif
 
-  #ifndef USART_DEBUG_ENABLED
-  Serial.end();
-  #endif
 }
 
 void loop() {
