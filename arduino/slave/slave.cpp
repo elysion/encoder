@@ -466,7 +466,7 @@ inline uint8_t Slave_::requestAddress() {
   Serial.print("Got addr: ");
   Serial.println(receivedAddress);
 
-  if (address == 255) {
+  if (receivedAddress == 255) {
     Serial.println("Did not get addr. Reset.");
     delay(1000);
     reset();
