@@ -210,9 +210,6 @@ void Slave_::update() {
           uint8_t padMask = (1 << i);
           if (changed & padMask) {
             uint8_t pinState = (boardPadStates & padMask) ? 1 : 0;
-            // TODO: the leds should be updated in the slave.ino file?
-            // setLedColor(board, i, leds.Color(0, pinState ? 0 : 70, 0));
-            // showLeds(board);
             // TODO: add type for pad -> easier to tell button events apart in the handler
             handler(board, CONTROL_TYPE_BUTTON, i, pinState);
           }
