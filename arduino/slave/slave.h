@@ -60,6 +60,9 @@ public:
   static uint32_t Color(uint8_t r, uint8_t g, uint8_t b) {
     return Adafruit_NeoPixel::Color(r, g, b);
   }
+  static uint32_t ColorHSV(uint16_t h, uint8_t s, uint8_t v) {
+    return Adafruit_NeoPixel::ColorHSV(h, s, v);
+  }
 #endif
 
 private:

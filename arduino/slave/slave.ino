@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include "config.h" // these imports need to be in this order because slave.h uses defs in config.h
 #include "slave.h"
 
@@ -13,7 +15,10 @@ Board firstBoardInLedChain(Board board) {
 
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
 inline uint32_t colorForPosition(uint8_t position) {
-  return position < 4 ? Slave.Color(20, 0, 0) : position > 7 ? Slave.Color(0, 0, 20) : Slave.Color(0, 20, 0);
+  return position % 4 == 0 ? Slave.ColorHSV(0, UINT8_MAX, 20) :
+         position % 4 == 1 ? Slave.ColorHSV(UINT16_MAX / 4, UINT8_MAX, 20) :
+         position % 4 == 2 ? Slave.ColorHSV(UINT16_MAX / 4 * 2, UINT8_MAX, 20) :
+                             Slave.ColorHSV(UINT16_MAX / 4 * 3, UINT8_MAX, 20);
 }
 #endif
 
