@@ -218,7 +218,7 @@ void Slave_::update() {
         position = (*(encoders)[i]).getPosition() * directionMultiplier;
         positionChanged = position != positions[i];
       } else {
-        position = (*(encoders)[i]).getDirection() * directionMultiplier;
+        position = static_cast<int8_t>((*(encoders)[i]).getDirection()) * directionMultiplier;
         positionChanged = position != 0;
       }
 
