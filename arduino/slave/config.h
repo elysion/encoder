@@ -48,6 +48,17 @@ static const byte ENCODER_POSITION_LIMITS[] = {
   0, 11
 };
 
+static const bool ENCODER_LOOP[] {
+  false,
+  false,
+#if PCB_VERSION == 3
+  false,
+#endif
+  false,
+  true,
+  true
+};
+
 #if PCB_VERSION == 3
 static const int LED_COUNT_L = LED_COUNTS[BOARD_L1] + LED_COUNTS[BOARD_L2];
 static const int LED_COUNT_M = LED_COUNTS[BOARD_M1] + LED_COUNTS[BOARD_M2];

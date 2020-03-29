@@ -251,7 +251,12 @@ void Slave_::update() {
 
     if (positionChanged) {
       if (ENCODER_TYPES[i] == ENCODER_TYPE_ABSOLUTE) {
-        int limited = constrain(position, ENCODER_POSITION_LIMITS[i*2], ENCODER_POSITION_LIMITS[i*2+1]);
+        int limited = 0;
+        if (ENCODER_LOOP[i]) {
+          limited = position > ENCODER_POSITION_LIMITS[i*2+1] ? ENCODER_POSITION_LIMITS[i*2] : position < ENCODER_POSITION_LIMITS[i*2] ? ENCODER_POSITION_LIMITS[i*2+1] : position;
+        } else {
+          limited = constrain(position, ENCODER_POSITION_LIMITS[i*2], ENCODER_POSITION_LIMITS[i*2+1]);
+        }
         positions[i] = limited;
         if (position != limited) {
           (*(encoders)[i]).setPosition(limited * directionMultiplier);
