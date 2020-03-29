@@ -1,32 +1,47 @@
 # See: http://code.google.com/p/arduino/wiki/Platforms
 
-menu.cpu=Processor
+menu.cpu=Version
 
 ##############################################################
 
-encoder.name=Encoder Arduino
+encoder_w_versions.name=Encoder Arduino with versions
 
-encoder.upload.tool=avrdude
-encoder.upload.protocol=arduino
+encoder_w_versions.upload.tool=avrdude
+encoder_w_versions.upload.protocol=arduino
+encoder_w_versions.upload.maximum_size=14336
+encoder_w_versions.upload.maximum_data_size=1024
+encoder_w_versions.upload.speed=19200
 
-encoder.bootloader.tool=avrdude
-encoder.bootloader.unlock_bits=0x3F
-encoder.bootloader.lock_bits=0x0F
+encoder_w_versions.bootloader.tool=avrdude
+encoder_w_versions.bootloader.unlock_bits=0x3F
+encoder_w_versions.bootloader.lock_bits=0x0F
 
-encoder.build.f_cpu=8000000L
-encoder.build.board=AVR_ENCODER
-encoder.build.core=arduino
-encoder.build.variant=encoder
+encoder_w_versions.build.f_cpu=8000000L
+encoder_w_versions.build.board=AVR_ENCODER
+encoder_w_versions.build.core=arduino
+encoder_w_versions.build.variant=encoder
 
-encoder.menu.cpu.atmega168=ATmega168p
+encoder_w_versions.bootloader.low_fuses=0xe2
+encoder_w_versions.bootloader.high_fuses=0xdf
+encoder_w_versions.bootloader.extended_fuses=0xF8
+encoder_w_versions.bootloader.file=atmega/ATmegaBOOT_168_encoder.hex
 
-encoder.menu.cpu.atmega168.upload.maximum_size=14336
-encoder.menu.cpu.atmega168.upload.maximum_data_size=1024
-encoder.menu.cpu.atmega168.upload.speed=19200
+encoder_w_versions.menu.cpu.atmega168v1=ATmega168v1
+encoder_w_versions.menu.cpu.atmega168v1.compiler.c.extra_flags=-DPCB_VERSION=1
+encoder_w_versions.menu.cpu.atmega168v1.compiler.cpp.extra_flags=-DPCB_VERSION=1
+encoder_w_versions.menu.cpu.atmega168v1.build.mcu=atmega168
 
-encoder.menu.cpu.atmega168.bootloader.low_fuses=0xe2
-encoder.menu.cpu.atmega168.bootloader.high_fuses=0xdd
-encoder.menu.cpu.atmega168.bootloader.extended_fuses=0xF8
-encoder.menu.cpu.atmega168.bootloader.file=atmega/ATmegaBOOT_168_encoder.hex
+encoder_w_versions.menu.cpu.atmega168v2=ATmega168v2
+encoder_w_versions.menu.cpu.atmega168v2.compiler.c.extra_flags=-DPCB_VERSION=2
+encoder_w_versions.menu.cpu.atmega168v2.compiler.cpp.extra_flags=-DPCB_VERSION=2
+encoder_w_versions.menu.cpu.atmega168v2.build.mcu=atmega168
 
-encoder.menu.cpu.atmega168.build.mcu=atmega168p
+encoder_w_versions.menu.cpu.atmega168v3=ATmega168v3
+encoder_w_versions.menu.cpu.atmega168v3.compiler.c.extra_flags=-DPCB_VERSION=3
+encoder_w_versions.menu.cpu.atmega168v3.compiler.cpp.extra_flags=-DPCB_VERSION=3
+encoder_w_versions.menu.cpu.atmega168v3.build.mcu=atmega168
+
+encoder_w_versions.menu.cpu.atmega168v3p=ATmega168v3p
+encoder_w_versions.menu.cpu.atmega168v3p.compiler.c.extra_flags=-DPCB_VERSION=3
+encoder_w_versions.menu.cpu.atmega168v3p.compiler.cpp.extra_flags=-DPCB_VERSION=3
+encoder_w_versions.menu.cpu.atmega168v3p.build.mcu=atmega168p
