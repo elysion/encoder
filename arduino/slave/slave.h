@@ -2,8 +2,6 @@
 
 typedef uint8_t byte;
 #include <pins_arduino.h>
-#include <Adafruit_NeoPixel.h>
-#include <RotaryEncoder.h>
 
 #include "features.h"
 #include "shared.h"
@@ -11,6 +9,13 @@ typedef uint8_t byte;
 // TODO: if this is not imported here, the initialization will fail and the device will not work properly
 // TODO: this should be fixed in order to be able to use this code as a library
 #include "config.h"
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
+#include <Adafruit_NeoPixel.h>
+#endif
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_ENCODER)
+#include <RotaryEncoder.h>  
+#endif
 
 struct ButtonPairStates {
   bool firstButtonState;
@@ -85,18 +90,24 @@ private:
 
   ChangeHandler handler;
 
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_LED)
   uint8_t currentLedPin = 0;
   Adafruit_NeoPixel *leds = 0;
+#endif
 
   volatile uint8_t address;
 
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_BUTTON)
   uint8_t switchStates;
   uint8_t previousSwitchStates;
+#endif
 
-  #if PCB_VERSION != 3 // TODO
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_TOUCH)
+#if PCB_VERSION != 3 // TODO
   uint8_t touchStates;
   uint8_t previousTouchStates;
-  #endif
+#endif
+#endif
 
 // TODO: config should somehow be project specific if this code is to be used as a library
   #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_MATRIX)
