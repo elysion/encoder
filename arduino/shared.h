@@ -1,5 +1,4 @@
-#ifndef SHARED_H
-#define SHARED_H
+#pragma once
 
 enum ControlType {
   CONTROL_TYPE_DEBUG,
@@ -25,5 +24,3 @@ struct SlaveToMasterMessage {
 
 const byte MASTER_ADDRESS = 1;
 const byte ADDRESS_LENGTH = 1;
-
-#endif // SHARED_H

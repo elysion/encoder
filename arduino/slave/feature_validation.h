@@ -1,5 +1,4 @@
-#ifndef FEATURE_VALIDATION_H
-#define FEATURE_VALIDATION_H
+#pragma once
 
 #ifndef SKIP_FEATURE_VALIDATION
 
@@ -65,8 +64,6 @@ static_assert(!HAS_FEATURE(L2, BOARD_FEATURE_TOUCH), "Cannot use TOUCH on L2 whe
 #if PCB_VERSION == 2 || PCB_VERSION == 3
 static_assert(!HAS_FEATURE(L2, BOARD_FEATURE_ENCODER), "Cannot use ENCODER on L2 when USART_DEBUG_ENABLED");
 #endif
-#endif
-
 #endif
 
 #endif

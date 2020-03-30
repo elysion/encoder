@@ -1,5 +1,4 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 #include "features.h"
 #include "types.h"
@@ -103,5 +102,3 @@ static const byte BOARD_FEATURES[] = {
 #define BOARD_HAS_DEBUG_LED
 
 #include "feature_validation.h"
-
-#endif // CONFIG_H

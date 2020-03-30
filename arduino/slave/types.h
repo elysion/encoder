@@ -1,5 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 enum EncoderType {
   ENCODER_TYPE_RELATIVE,
@@ -23,5 +22,3 @@ enum EncoderDirection {
   ENCODE_DIRECTION_CW = 1,
   ENCODE_DIRECTION_CCW = -1
 };
-
-#endif //TYPES_H

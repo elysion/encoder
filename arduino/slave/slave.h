@@ -1,5 +1,4 @@
-#ifndef SLAVE_H
-#define SLAVE_H
+#pragma once
 
 typedef uint8_t byte;
 #include <pins_arduino.h>
@@ -300,4 +299,3 @@ static const uint8_t BUTTON_MATRIX_OUTPUT_PINS[MAX_MATRIX_BOARD_COUNT][MATRIX_OU
 #endif
 
 extern Slave_ Slave;
-#endif
