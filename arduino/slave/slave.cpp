@@ -173,9 +173,7 @@ void Slave_::update() {
     }
   }
 #endif
-#endif
 
-#if PCB_VERSION != 3 // TODO
 #if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_PADS)
   for (uint8_t board = 0; board < 3; board++) {
     const uint8_t padStateIndex = board - 1;
@@ -205,9 +203,27 @@ void Slave_::update() {
     }
   }
 #endif
-#endif
 
-#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_ENCODER) || ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_POT) // TODO: separate encoder and pot?
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_POT)
+  for (int i = 0; i < BOARD_COUNT; ++i) {
+      int position;
+      uint8_t positionChanged = false;
+
+      if (BOARD_FEATURES[i] & BOARD_FEATURE_POT) {
+        // Resolution restricted to 7-bits for MIDI compatibility
+        position = analogRead(POT_PINS[i]) >> 3;
+        positionChanged = position != positions[i] && (position == 0 || position == 127 || POT_CHANGE_THRESHOLD < abs(positions[i] - position));
+      }
+
+      if (positionChanged) {
+        handler((Board)i, CONTROL_TYPE_POSITION, 0, position);
+      }
+    }
+  }
+#endif
+#endif // PCB_VERSION != 3
+
+#if ANY_BOARD_HAS_FEATURE(BOARD_FEATURE_ENCODER)
   for (int i = 0; i < BOARD_COUNT; ++i) {
     int position;
     uint8_t positionChanged = false;
@@ -222,7 +238,7 @@ void Slave_::update() {
         positionChanged = position != 0;
       }
 
-#if defined(USART_DEBUG_ENABLED) && defined(INTERRUPT_DEBUG)
+      #if defined(USART_DEBUG_ENABLED) && defined(INTERRUPT_DEBUG)
       uint8_t stateA = digitalRead(ENCODER_PINS[i][0]);
       uint8_t stateB = digitalRead(ENCODER_PINS[i][1]);
 
@@ -238,13 +254,7 @@ void Slave_::update() {
         states[2*i] = stateA;
         states[2*i+1] = stateB;
       }
-#endif
-#if PCB_VERSION != 3
-    } else if (BOARD_FEATURES[i] & BOARD_FEATURE_POT) {
-      // Resolution restricted to 7-bits for MIDI compatibility
-      position = analogRead(POT_PINS[i]) >> 3;
-      positionChanged = position != positions[i] && (position == 0 || position == 127 || POT_CHANGE_THRESHOLD < abs(positions[i] - position));
-#endif
+      #endif
     } else {
       continue;
     }
@@ -267,13 +277,12 @@ void Slave_::update() {
       }
     }
   }
-  #endif
-
   #ifdef USART_DEBUG_ENABLED
   if (Serial.available()) {        // If anything comes in Serial,
     Serial.write(Serial.read());   // read it and send it out
   }
   #endif
+#endif
 }
 
 void Slave_::sendMessageToMaster(byte input, uint16_t value, ControlType type) {
