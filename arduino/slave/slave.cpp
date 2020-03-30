@@ -51,10 +51,10 @@ Slave_::Slave_() {
 void Slave_::setup(ChangeHandler changeHandler) {
   handler = changeHandler;
 
-  if (LED_BUILTIN_AVAILABLE) {
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
-  }
+#if LED_BUILTIN_AVAILABLE
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+#endif
 
   delay(10);
   setupI2c();
