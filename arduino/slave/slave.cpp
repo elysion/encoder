@@ -277,11 +277,6 @@ void Slave_::update() {
       }
     }
   }
-  #ifdef USART_DEBUG_ENABLED
-  if (Serial.available()) {        // If anything comes in Serial,
-    Serial.write(Serial.read());   // read it and send it out
-  }
-  #endif
 #endif
 }
 
