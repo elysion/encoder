@@ -460,11 +460,15 @@ inline uint8_t Slave_::requestAddress() {
   while (!Wire.available()) {}
 
   receivedAddress = Wire.read();
+  #ifdef USART_DEBUG_ENABLED
   Serial.print("Got addr: ");
   Serial.println(receivedAddress);
+  #endif
 
   if (receivedAddress == 255) {
+    #ifdef USART_DEBUG_ENABLED
     Serial.println("Did not get addr. Reset.");
+    #endif
     delay(1000);
     reset();
   }
