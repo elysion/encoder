@@ -1,0 +1,9 @@
+{
+  "configurations": [
+    {
+      "name": "Max",
+      "defines": ["PCB_VERSION=3"]
+    }
+  ],
+  "version": 4
+}
