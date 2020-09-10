@@ -1,4 +1,4 @@
-# Interface module for modular controllers.
+# Interface module for modular controllers
 
 The module can be used for converting encoder, pot and button movement
 into messages sent over TWI / I2C. You can e.g. combine up to 6 encoders 
