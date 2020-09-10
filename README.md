@@ -20,7 +20,7 @@ keeping the BOM cost low.
 You can find a proof of concept programming jig / bed of nails tester
 for the microcontroller board here: https://a360.co/2ylXmQ3
 
-## Currently supported components and settings:
+## Currently supported components and settings
 * Encoders
   * Absolute / Relative
   * Loop around / constrained between values
